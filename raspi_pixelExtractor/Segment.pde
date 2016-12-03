@@ -64,7 +64,6 @@ class Segment{
     out.setJSONArray("leds", t);
     
    // out.setBoolean("selected", selected);
-    out.setInt("c", c);
     out.setFloat("d", d);
     out.setFloat("ca", ca);
     out.setFloat("sa", sa);
@@ -90,7 +89,6 @@ class Segment{
     }
     
   //  selected = json.getBoolean("selected");
-    c = json.getInt("c");
     d = json.getFloat("d");
     ca = json.getFloat("ca");
     sa = json.getFloat("sa");

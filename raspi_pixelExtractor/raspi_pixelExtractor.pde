@@ -6,23 +6,34 @@ int threads = 0;
 
 
 void setup() {
+  size(1266,800);
   teensySetup();
-  colorMode(HSB, 360, 100, 100);
+  //colorMode(HSB, 360, 100, 100);
 
   for (int i=0; i < numPorts; i++) { 
     thread("senderThread");
     delay(100);
   }
+  
+  importMesh("mesh.json");
 }
 
 
 void draw() {
   //multiSender();
+  background(0);
+
+  fill(255,0,0);
+
+  rectMode(CENTER);
+  rect(mouseX,mouseY,200,200);
 
   long lastFrame = 0;
   long frameTime = 0;
+  
+  ready[0] = false;
 
-  while (true) {
+  /*while (true) {
     boolean allReady = true;
     for (int i=0; i < numPorts; i++) {
       if (!ready[i]) {
@@ -44,7 +55,7 @@ void draw() {
         ready[i] = false;
       }
     }
-  }
+  }*/
 }
 
 void senderThread() {
@@ -59,7 +70,7 @@ void senderThread() {
       continue;
     }
 
-    image2data(ledData, 1, 0);
+    mesh2data(ledData, 1, 0);
     ledData[0] = '%';
     // send the raw data to the LEDs  :-)
     ledSerial[i].write(ledData);

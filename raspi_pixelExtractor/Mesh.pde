@@ -3,9 +3,9 @@ ArrayList<Segment> segments = new ArrayList<Segment>();
 static final int TEENSY_NUMBER = 7;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
 
-void importMesh(){
+void importMesh(String filename){
   
-  JSONObject json = loadJSONObject("mesh.json");
+  JSONObject json = loadJSONObject(filename);
   
   JSONArray ss = json.getJSONArray("segments");
   segments = new ArrayList<Segment>();
