@@ -1,9 +1,9 @@
-#define TEENSY_ID      6
+#define TEENSY_ID      0
 
 #include <OctoWS2811.h>
 
 #if TEENSY_ID == 0
-const int ledsPerStrip = 203;
+const int ledsPerStrip = 211;
 #elif TEENSY_ID == 1
 const int ledsPerStrip = 226;
 #elif TEENSY_ID == 2

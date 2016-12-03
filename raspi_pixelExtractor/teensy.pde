@@ -79,7 +79,43 @@ void serialConfigure(String portName) {
   numPorts++;
 }
 
-
+void mesh2data(byte[] data, int offset, int teensyID){
+  int pixel[] = new int[8];
+  int mask;
+  
+  Segment currentS[] = new Segment[8];
+  arrayCopy(teensies[teensyID].channel, currentS);
+  int currentLED[] = {0,0,0,0,0,0,0,0};
+  
+  for(int i = 0; i < maxLeds[teensyID]; i++){
+    
+    for(int j = 0; j < 8; j++){
+      if(currentS[j] == null) pixel[j] = 0;
+      else{
+        LED l = currentS[j].leds[currentLED[j]];
+        pixel[j] = get(l.posX,l.posY);
+        pixel[j] = colorWiring(pixel[j]);
+        
+        if(i == 0 && j == 0) println(red(pixel[j]));
+        //This was the last LED, switch to next segment
+        if(++currentLED[j] == currentS[j].leds.length){
+          currentS[j] = currentS[j].next;
+          currentLED[j] = 0;
+        }
+      }
+    }
+    
+    // convert 8 pixels to 24 bytes
+    for (mask = 0x800000; mask != 0; mask >>= 1) {
+      byte b = 0;
+      for (int j=0; j < 8; j++) {
+        if ((pixel[j] & mask) != 0) b |= (1 << j);
+      }
+      data[offset++] = b;
+    }
+  }
+  
+}
 
 // image2data converts an image to OctoWS2811's raw data format.
 // The number of vertical pixels in the image must be a multiple
