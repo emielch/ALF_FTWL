@@ -32,7 +32,7 @@ boolean ledState = false;
 void setup() {
   pinMode(ledPin,OUTPUT);
   switchLed();
-  Serial.setTimeout(5000);
+  Serial.setTimeout(50);
   leds.begin();
   leds.show();
 }

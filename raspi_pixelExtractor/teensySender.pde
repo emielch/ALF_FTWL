@@ -45,6 +45,7 @@ void senderSetup() {
 
 void sendFrame() {
   while (writeBuffersFilled) {
+    delay(1);
   }
   for (int i=0; i < numPorts; i++) {
     ledBuffer currBuffer = writeBuffers.get(i);
@@ -60,6 +61,7 @@ void sendController() {
   long frameTime = 0;
 
   while (true) {
+    delay(1);
     if (millis()>lastPrint+printDelay) {
       lastPrint = millis();
 
@@ -95,6 +97,7 @@ void sendController() {
       }
 
       while (!writeBuffersFilled) {
+        delay(1);
       }
 
       ArrayList<ledBuffer> switchBuffers = writeBuffers;
@@ -128,7 +131,7 @@ void sendThread() {
     } else if (teensySendState[i]==3) {
       ledSerial[i].write('*');
       teensySendState[i] = 0;
-    }
+    }else delay(1);
   }
 }
 

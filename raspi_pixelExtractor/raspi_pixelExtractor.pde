@@ -1,7 +1,7 @@
 
 void setup() {
   size(1266, 800, P2D);
-  frameRate(300);
+  frameRate(1000);
   serialSetup();
   senderSetup();
 }
