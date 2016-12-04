@@ -13,35 +13,66 @@ void setup() {
     thread("senderThread");
     delay(100);
   }
+  thread("controlThread");
 }
 
+FloatList framerates = new FloatList();
+long lastPrint = 0;
+long printDelay = 1000;
+long maxFrameTime = 0;
 
 void draw() {
   //multiSender();
+}
 
+void controlThread() {
   long lastFrame = 0;
   long frameTime = 0;
 
   while (true) {
-    boolean allReady = true;
+    if (millis()>lastPrint+printDelay) {
+      lastPrint = millis();
+      float avg = 0;
+      for (int i=0; i<framerates.size(); i++) {
+        avg += framerates.get(i);
+      }
+      avg/=framerates.size();
+      println(avg);
+      println(maxFrameTime/1000000.);
+      maxFrameTime= 0;
+      framerates.clear();
+    }
+
+
+    boolean allSent = true;
+    boolean allSync = true;
     for (int i=0; i < numPorts; i++) {
-      if (!ready[i]) {
-        allReady=false;
-        break;
+      if (teensySendState[i]!=1) {
+        allSent=false;
+      }
+      if (teensySendState[i]!=3) {
+        allSync=false;
       }
     }
 
-    if (allReady) {
+    if (allSent) {
+      hue++;
+      if (hue>360) hue-=360;
+
+      for (int i=0; i < numPorts; i++) {
+        teensySendState[i] = 2;
+      }
+    }
+    if (allSync) {
       long currTime = System.nanoTime();
       frameTime = currTime - lastFrame;
       lastFrame = currTime;
-      println(1000000000./frameTime);
-
-      //hue++;
-      //if (hue>360) hue-=360;
+      float framerate = 1000000000./frameTime;
+      if (frameTime>maxFrameTime) maxFrameTime = frameTime;
+      framerates.append(framerate);
 
       for (int i=0; i < numPorts; i++) {
-        ready[i] = false;
+        teensySendState[i] = 0;
       }
     }
   }
@@ -54,42 +85,15 @@ void senderThread() {
   byte[] ledData =  new byte[(maxLeds[i] * 8 * 3) + 1];
 
   while (true) {
-    if (ready[i]) {
-      delay(5);
-      continue;
-    }
-
-    image2data(ledData, 1, 0);
-    ledData[0] = '%';
-    // send the raw data to the LEDs  :-)
-    ledSerial[i].write(ledData);
-    ledSerial[i].write('*');
-    ready[i] = true;
-  }
-}
-
-
-
-void multiSender() {
-  long lastFrame = 0;
-  long frameTime = 0;
-
-  while (true) {
-    long currTime = System.nanoTime();
-    frameTime = currTime - lastFrame;
-    lastFrame = currTime;
-    println(1000000000./frameTime);
-
-    for (int i=0; i < numPorts; i++) {    
-      byte[] ledData =  new byte[(maxLeds[i] * 8 * 3) + 1];
-      //image2data(ledData, 1, 0);
+    if (teensySendState[i]==0) {
+      image2data(ledData, 1, 0);
       ledData[0] = '%';
       // send the raw data to the LEDs  :-)
       ledSerial[i].write(ledData);
-    }
-
-    for (int i=0; i < numPorts; i++) {
+      teensySendState[i] = 1;
+    } else if (teensySendState[i]==2) {
       ledSerial[i].write('*');
+      teensySendState[i] = 3;
     }
   }
 }

@@ -11,9 +11,8 @@ int[] ledTeensyID = new int[maxPorts];
 int[] maxLeds = new int[maxPorts];
 int[] gammatable = new int[256];
 int errorCount=0;
-float framerate=0;
 
-boolean[] ready = new boolean[maxPorts];
+volatile byte[] teensySendState = new byte[maxPorts];
 
 void teensySetup() {
   String[] list = Serial.list();
@@ -34,7 +33,7 @@ void teensySetup() {
   }
   
   for (int i=0; i<maxPorts; i++){
-    ready[i] = true;
+    teensySendState[i] = 3;
   }
   
 }
