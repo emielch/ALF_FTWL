@@ -6,14 +6,16 @@ int threads = 0;
 
 
 void setup() {
+  size(1266, 800);
   teensySetup();
-  colorMode(HSB, 360, 100, 100);
+  //colorMode(HSB, 360, 100, 100);
 
   for (int i=0; i < numPorts; i++) { 
     thread("senderThread");
     delay(100);
   }
   thread("controlThread");
+  importMesh("mesh.json");
 }
 
 FloatList framerates = new FloatList();
@@ -22,7 +24,12 @@ long printDelay = 1000;
 long maxFrameTime = 0;
 
 void draw() {
-  //multiSender();
+  background(0);
+
+  fill(255, 0, 0);
+
+  rectMode(CENTER);
+  rect(mouseX, mouseY, 200, 200);
 }
 
 void controlThread() {
@@ -43,9 +50,9 @@ void controlThread() {
       framerates.clear();
     }
 
-
     boolean allSent = true;
     boolean allSync = true;
+
     for (int i=0; i < numPorts; i++) {
       if (teensySendState[i]!=1) {
         allSent=false;
@@ -86,7 +93,8 @@ void senderThread() {
 
   while (true) {
     if (teensySendState[i]==0) {
-      image2data(ledData, 1, 0);
+
+      mesh2data(ledData, 1, 0);
       ledData[0] = '%';
       // send the raw data to the LEDs  :-)
       ledSerial[i].write(ledData);
