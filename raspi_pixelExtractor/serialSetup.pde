@@ -16,6 +16,7 @@ void serialSetup() {
     if(list[i].equals("/dev/ttyAMA0")) continue;
     serialConfigure(list[i]);
   }
+  println();
   if (numPorts == 0){
     println("No Teensy's found");
     exit();
@@ -58,7 +59,7 @@ void serialConfigure(String portName) {
   teensyID[numPorts] = Integer.parseInt(param[0]);
   maxLeds[numPorts] = Integer.parseInt(param[1]);
   
-  println("teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
+  println(numPorts+1, "teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
   
   numPorts++;
 }
