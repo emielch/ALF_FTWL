@@ -20,6 +20,10 @@ int threads = 0;
 
 
 void senderSetup() {
+  for (int i=0; i < 256; i++) {
+    gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
+  }
+
   //create send and write buffers
   for (int i=0; i < numPorts; i++) { 
     writeBuffers.add(new ledBuffer((maxLeds[i] * 8 * 3) + ledDataOffset));
@@ -64,10 +68,12 @@ void sendController() {
         avg += frameTimes.get(i);
       }
       avg/=frameTimes.size();
-      
+
       float maxFrameTime = -1;
+      float minFrameTime = -1;
       if (frameTimes.size()>0) maxFrameTime=frameTimes.max();
-      println("frameRate   avg: ", int(1000./avg), "\tmin: ", int(1000./maxFrameTime));
+      if (frameTimes.size()>0) minFrameTime=frameTimes.min();
+      println("frameRate   avg: ", int(1000./avg), "\tmin: ", int(1000./maxFrameTime), "\tmax: ", int(1000./minFrameTime));
       frameTimes.clear();
     }
 

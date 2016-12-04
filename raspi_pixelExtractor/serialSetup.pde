@@ -1,6 +1,6 @@
 
 int numPorts=0;  // the number of serial ports in use
-int maxPorts=24; // maximum number of serial ports
+int maxPorts=7; // maximum number of serial ports
 
 Serial[] ledSerial = new Serial[maxPorts];     // each port's actual Serial port
 int[] teensyID = new int[maxPorts];
@@ -19,10 +19,6 @@ void serialSetup() {
   if (numPorts == 0){
     println("No Teensy's found");
     exit();
-  }
-
-  for (int i=0; i < 256; i++) {
-    gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
   }
   
   for (int i=0; i<maxPorts; i++){
@@ -65,4 +61,10 @@ void serialConfigure(String portName) {
   println("teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
   
   numPorts++;
+}
+
+void closeConnections(){
+  for (int i=0; i<numPorts; i++){
+    ledSerial[i].stop();
+  }
 }
