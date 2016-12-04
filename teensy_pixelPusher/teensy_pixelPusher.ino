@@ -1,4 +1,4 @@
-#define TEENSY_ID      0
+#define TEENSY_ID      1
 
 #include <OctoWS2811.h>
 

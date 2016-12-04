@@ -9,7 +9,7 @@ void setup() {
 
 void draw() {
   background(0);
-  fill(255, 0, 0);
+  fill(255, 255, 0);
   rectMode(CENTER);
   rect(mouseX, mouseY, 200, 200);
   sendFrame();
