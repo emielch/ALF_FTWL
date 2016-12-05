@@ -8,9 +8,10 @@ long lastPrint = 0;
 long printDelay = 1000;
 
 ArrayList<SenderThread> senderThreads = new ArrayList<SenderThread>();
-
+ArrayList<byte[]> mapedData = new ArrayList<byte[]>();
 int ledDataOffset = 1;
-
+CountDownLatch sendLatch =new CountDownLatch(0);
+CountDownLatch receiveLatch = new CountDownLatch(1);
 int threads = 0;
 
 
@@ -18,7 +19,7 @@ void senderSetup() {
   for (int i=0; i < 256; i++) {
     gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
   }
-
+ 
   // start the send controller
   thread("sendController");
 
@@ -26,14 +27,28 @@ void senderSetup() {
 }
 
 void sendFrame() {
-
+  //print('g');
+  latchWait(sendLatch);
+  sendLatch =new CountDownLatch(1);
+ // print('h');
+  //println("we are about creat subdata");
   for (int i=0; i < numPorts; i++) {
-    SenderThread currSender = senderThreads.get(i);
-    byte[] ledData = currSender.getWriteBuffer();
-    mesh2data(ledData, ledDataOffset, i);
-    ledData[0] = '%';
-    currSender.setWriteFilled();
+   // SenderThread currSender = senderThreads.get(i);
+    //byte[] ledData = currSender.getWriteBuffer();
+    
+   // print('i');
+    mesh2data(mapedData.get(i), ledDataOffset, i);
+    mapedData.get(i)[0] = '%';
+    //currSender.setWriteFilled();
   }
+ // println("Data is ready to be copied");
+ //print('j');
+  if(receiveLatch.getCount()==1){
+     receiveLatch.countDown();
+    }
+  //receiveLatch.countDown();
+  //print('k');
+   
 }
 
 void latchWait(CountDownLatch latch) {
@@ -46,20 +61,46 @@ void latchWait(CountDownLatch latch) {
 }
 
 void sendController() {
+ 
+  CountDownLatch transmit = new CountDownLatch(numPorts);
+  CountDownLatch display = new CountDownLatch(numPorts);
+ 
   while (true) {
-    CountDownLatch latch = new CountDownLatch(numPorts);
+    
+    latchWait(receiveLatch);
+    receiveLatch = new CountDownLatch(1);
+   // print('a');
+    
+   for (int i=0; i < numPorts; i++) {
+      SenderThread currSender = senderThreads.get(i);
+      currSender.writeBuffer(mapedData.get(i));
+    }
+    if(sendLatch.getCount()==1){
+     sendLatch.countDown();
+    }
+   // print('b');
+    //sendlatch 0
+    transmit = new CountDownLatch(numPorts);
     for (int i=0; i < numPorts; i++) {
       SenderThread currSender = senderThreads.get(i);
-      currSender.sendData(latch);
+      currSender.sendData(transmit);
     }
-    latchWait(latch);
-    latch = new CountDownLatch(numPorts);
+    latchWait(transmit);
+  //   print('c');
+    
+    display = new CountDownLatch(numPorts);
     for (int i=0; i < numPorts; i++) {
       SenderThread currSender = senderThreads.get(i);
-      currSender.sendSync(latch);
+      currSender.sendSync(display);
     }
-    latchWait(latch);
-  }
+    
+
+    latchWait(display);
+ // print('d');
+  
+  
+}
+  
 }
 
 //void sendController() {
