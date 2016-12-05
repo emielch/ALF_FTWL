@@ -9,13 +9,14 @@ void testSegmentCounts(int tid){
     for(int i = 0; i < 8; i++){
       if(currentS[i] == null) currentS[i] = teensies[tid].channel[i];
       else{ 
-        currentS = currentS.next;
+        currentS[i] = currentS[i].next;
         if(currentS[i] == null) currentS[i] = teensies[tid].channel[i];
       }
       for(int j = 0; j < currentS[i].leds.length; j++){
         LED l = currentS[i].leds[j];
-        set(l.posX, l.posY, color(255,255,255);
+        set(l.posX, l.posY, color(255,255,255));
       }
     }
+    lastUpdate = millis();
   }
 }
