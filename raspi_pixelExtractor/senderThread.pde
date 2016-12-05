@@ -9,13 +9,16 @@ class SenderThread extends Thread {
   byte[] sendBuffer;
   byte[] writeBuffer;
 
-  volatile boolean writeLock;
-  volatile boolean writeFilled;
+  volatile boolean toDo;
+  volatile char task;
+  volatile boolean sleeping;
+  volatile boolean running=true;
 
-  CountDownLatch writeLatch;
-  CountDownLatch sendLatch;
 
-  boolean sendState; // true = send data, false = send sync
+  CountDownLatch currentLatch;
+
+
+  //boolean sendState; // true = send data, false = send sync
 
   SenderThread( String _name, Serial _port, int _ledAm) {
     name = _name;
@@ -23,66 +26,90 @@ class SenderThread extends Thread {
     ledAm = _ledAm;
     sendBuffer =  new byte[(ledAm * 8 * 3) + ledDataOffset];
     writeBuffer =  new byte[(ledAm * 8 * 3) + ledDataOffset];
-    writeLock = false;
-    writeFilled = false;
 
-    writeLatch = new CountDownLatch(1);
-  }
 
-  public byte[] getWriteBuffer() {
-    if (writeLock) {
-      writeLatch = new CountDownLatch(1);
-      latchWait(writeLatch);
+    currentLatch = new CountDownLatch(1);
+
+
+    if (!isAlive()) {
+      t = new Thread (this, name);
+      //sendState = true;
+      t.start ();
     }
-    writeLock = true;
-    return writeBuffer;
-  }
-  
-  public void setWriteFilled(){
-    writeFilled = true;
-    writeLatch.countDown();
   }
 
-  void switchBuffers() {
-    byte[] switchBuffer = sendBuffer;
-    sendBuffer = writeBuffer;
-    writeBuffer = switchBuffer;
-    writeLock = false;
-    writeFilled = false;
-    writeLatch.countDown();
+  public void writeBuffer(byte[] data) {
+    sendBuffer=data.clone();
   }
+
+
 
   public void run() {
-    if (sendState) {
-      switchBuffers();
-      port.write(sendBuffer);
-    } else {
-      port.write('*');
+    println("we are running");
+    while (running) {
+      if (toDo) {
+        if (task=='s') {
+          port.write(sendBuffer);
+          iamDone('s');
+        } else if (task=='d') {
+          port.write('*');
+          iamDone('d');
+        }
+      }
+      try {
+        //println("nothing to do sleeping now");
+        sleeping=true;
+        Thread.sleep(150);
+        sleeping=false;
+        //println("done sleeping, lets see");
+      }
+      catch(InterruptedException e) {
+       // println("got interputed");
+        sleeping=false;
+      }
     }
-    sendLatch.countDown();
   }
+  private void iamDone(char taskIn) {
+    if (taskIn!=task) {
+
+      println("Something is seriously wrong the thread finished a task it was not supposed to do");
+      halt();
+    }
+    toDo=false;
+    currentLatch.countDown();
+  }
+
 
   public void sendData (CountDownLatch latch) {
-    if (!writeFilled) { // wait till there is new data in the write buffer to send
-      writeLatch = new CountDownLatch(1);
-      latchWait(writeLatch);
+    if(toDo==true){
+     println("stopping we are not yet done with the previous thing .. trying to send now"); 
     }
-
-    sendLatch = latch;
-    if (!isAlive()) {
-      t = new Thread (this, name);
-      sendState = true;
-      t.start ();
+    task='s';
+    toDo=true;
+    currentLatch = latch;
+    if (sleeping) {
+      t.interrupt();
     }
   }
-
   public void sendSync (CountDownLatch latch) {
-
-    sendLatch = latch;
-    if (!isAlive()) {
-      t = new Thread (this, name);
-      sendState = false;
-      t.start ();
+    if(toDo==true){
+     println("stopping we are not yet done with the previous thing .. trying to sync now"); 
     }
+    
+    task='d';
+    toDo=true;
+    currentLatch = latch;
+    if (sleeping) {
+      t.interrupt();
+    }
+  }
+  public void halt() {
+    running=false;
+    if (sleeping) {
+      t.interrupt();
+    }
+    //t.join();
+    port.clear();
+    port.stop();
   }
 }
