@@ -14,7 +14,7 @@ void serialSetup() {
   println((Object)list);
   for (int i=0; i<list.length; i++){
     if(list[i].equals("/dev/ttyAMA0")) continue;
-    if(!list[i].substring(0,10).equals("/dev/tty.u")) continue;
+    //if(!list[i].substring(0,10).equals("/dev/tty.u")) continue;
     serialConfigure(list[i]);
   }
   println();
