@@ -22,10 +22,6 @@ void serialSetup() {
     exit();
   }
   
-  for (int i=0; i<maxPorts; i++){
-    teensySendState[i] = 3;
-  }
-  
 }
 
 // ask a Teensy board for its LED configuration, and set up the info for it.
@@ -58,6 +54,9 @@ void serialConfigure(String portName) {
   // only store the info and increase numPorts if Teensy responds properly
   teensyID[numPorts] = Integer.parseInt(param[0]);
   maxLeds[numPorts] = Integer.parseInt(param[1]);
+  
+  SenderThread newSender = new SenderThread("teensyIDSender:"+teensyID[numPorts], ledSerial[numPorts], maxLeds[numPorts]);
+  senderThreads.add(newSender);
   
   println(numPorts+1, "teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
   

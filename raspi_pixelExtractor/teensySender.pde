@@ -7,12 +7,7 @@ FloatList frameTimes = new FloatList();
 long lastPrint = 0;
 long printDelay = 1000;
 
-volatile ArrayList<ledBuffer> writeBuffers = new ArrayList<ledBuffer>();
-volatile ArrayList<ledBuffer> sendBuffers = new ArrayList<ledBuffer>();
-
-volatile boolean writeBuffersFilled = false;
-
-volatile byte teensySendState[] = new byte[maxPorts]; // 0: done syncing, do nothing; 1: send current send Buffers; 2: done sending buffer; 3: send sync
+ArrayList<SenderThread> senderThreads = new ArrayList<SenderThread>();
 
 int ledDataOffset = 1;
 
@@ -24,19 +19,6 @@ void senderSetup() {
     gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
   }
 
-  //create send and write buffers
-  for (int i=0; i < numPorts; i++) { 
-    writeBuffers.add(new ledBuffer((maxLeds[i] * 8 * 3) + ledDataOffset));
-    sendBuffers.add(new ledBuffer((maxLeds[i] * 8 * 3) + ledDataOffset));
-  }
-
-  // start the send threads
-  for (int i=0; i < numPorts; i++) { 
-    teensySendState[i] = 0;
-    thread("sendThread");
-    delay(100);
-  }
-
   // start the send controller
   thread("sendController");
 
@@ -44,98 +26,103 @@ void senderSetup() {
 }
 
 void sendFrame() {
-  while (writeBuffersFilled) {
-    delay(1);
-  }
+
   for (int i=0; i < numPorts; i++) {
-    ledBuffer currBuffer = writeBuffers.get(i);
-    byte[] ledData = currBuffer.ledData;
+    SenderThread currSender = senderThreads.get(i);
+    byte[] ledData = currSender.getWriteBuffer();
     mesh2data(ledData, ledDataOffset, i);
     ledData[0] = '%';
+    currSender.setWriteFilled();
   }
-  writeBuffersFilled = true;
+}
+
+void latchWait(CountDownLatch latch) {
+  try {
+    latch.await();  // wait untill all threads sent their data
+  } 
+  catch (InterruptedException e) {
+    e.printStackTrace();
+  }
 }
 
 void sendController() {
-  long lastFrame = 0;
-  long frameTime = 0;
-
   while (true) {
-    delay(1);
-    if (millis()>lastPrint+printDelay) {
-      lastPrint = millis();
-
-      float avg = 0;
-      for (int i=0; i<frameTimes.size(); i++) {
-        avg += frameTimes.get(i);
-      }
-      avg/=frameTimes.size();
-
-      float maxFrameTime = -1;
-      float minFrameTime = -1;
-      if (frameTimes.size()>0) maxFrameTime=frameTimes.max();
-      if (frameTimes.size()>0) minFrameTime=frameTimes.min();
-      println("frameRate   avg: ", int(1000./avg), "\tmin: ", int(1000./maxFrameTime), "\tmax: ", int(1000./minFrameTime));
-      frameTimes.clear();
-    }
-
-    boolean allSent = true;
-    boolean allSynced = true;
-
+    CountDownLatch latch = new CountDownLatch(numPorts);
     for (int i=0; i < numPorts; i++) {
-      if (teensySendState[i]!=2) {
-        allSent=false;
-      }
-      if (teensySendState[i]!=0) {
-        allSynced=false;
-      }
+      SenderThread currSender = senderThreads.get(i);
+      currSender.sendData(latch);
     }
-
-    if (allSent) {
-      for (int i=0; i < numPorts; i++) {
-        teensySendState[i] = 3;
-      }
-
-      while (!writeBuffersFilled) {
-        delay(1);
-      }
-
-      ArrayList<ledBuffer> switchBuffers = writeBuffers;
-      writeBuffers = sendBuffers;
-      sendBuffers = switchBuffers;
-      writeBuffersFilled = false;
+    latchWait(latch);
+    latch = new CountDownLatch(numPorts);
+    for (int i=0; i < numPorts; i++) {
+      SenderThread currSender = senderThreads.get(i);
+      currSender.sendSync(latch);
     }
-    if (allSynced) {
-      long currTime = System.nanoTime();
-      frameTime = currTime - lastFrame;
-      lastFrame = currTime;
-      frameTimes.append(frameTime/1000000.);
-
-      for (int i=0; i < numPorts; i++) {
-        teensySendState[i] = 1;
-      }
-    }
+    latchWait(latch);
   }
 }
 
+//void sendController() {
+//  long lastFrame = 0;
+//  long frameTime = 0;
 
-void sendThread() {
-  int i = threads;
-  threads++;
+//  while (true) {
+//    delay(1);
+//    if (millis()>lastPrint+printDelay) {
+//      lastPrint = millis();
 
-  while (true) {    
-    if (teensySendState[i]==1) {
-      byte ledData[] = sendBuffers.get(i).ledData;
-      ledSerial[i].write(ledData);
-      teensySendState[i] = 2;
-    } else if (teensySendState[i]==3) {
-      ledSerial[i].write('*');
-      teensySendState[i] = 0;
-    }else delay(1);
-  }
-}
+//      float avg = 0;
+//      for (int i=0; i<frameTimes.size(); i++) {
+//        avg += frameTimes.get(i);
+//      }
+//      avg/=frameTimes.size();
 
+//      float maxFrameTime = -1;
+//      float minFrameTime = -1;
+//      if (frameTimes.size()>0) maxFrameTime=frameTimes.max();
+//      if (frameTimes.size()>0) minFrameTime=frameTimes.min();
+//      println("frameRate   avg: ", int(1000./avg), "\tmin: ", int(1000./maxFrameTime), "\tmax: ", int(1000./minFrameTime));
+//      frameTimes.clear();
+//    }
 
+//    boolean allSent = true;
+//    boolean allSynced = true;
+
+//    for (int i=0; i < numPorts; i++) {
+//      if (teensySendState[i]!=2) {
+//        allSent=false;
+//      }
+//      if (teensySendState[i]!=0) {
+//        allSynced=false;
+//      }
+//    }
+
+//    if (allSent) {
+//      for (int i=0; i < numPorts; i++) {
+//        teensySendState[i] = 3;
+//      }
+
+//      while (!writeBuffersFilled) {
+//        delay(1);
+//      }
+
+//      ArrayList<ledBuffer> switchBuffers = writeBuffers;
+//      writeBuffers = sendBuffers;
+//      sendBuffers = switchBuffers;
+//      writeBuffersFilled = false;
+//    }
+//    if (allSynced) {
+//      long currTime = System.nanoTime();
+//      frameTime = currTime - lastFrame;
+//      lastFrame = currTime;
+//      frameTimes.append(frameTime/1000000.);
+
+//      for (int i=0; i < numPorts; i++) {
+//        teensySendState[i] = 1;
+//      }
+//    }
+//  }
+//}
 
 
 void mesh2data(byte[] data, int offset, int id) {
