@@ -50,7 +50,7 @@ void sendFrame() {
   for (int i=0; i < numPorts; i++) {
     ledBuffer currBuffer = writeBuffers.get(i);
     byte[] ledData = currBuffer.ledData;
-    mesh2data(ledData, ledDataOffset, teensyID[i]);
+    mesh2data(ledData, ledDataOffset, i);
     ledData[0] = '%';
   }
   writeBuffersFilled = true;
@@ -138,15 +138,16 @@ void sendThread() {
 
 
 
-void mesh2data(byte[] data, int offset, int teensyID) {
+void mesh2data(byte[] data, int offset, int id) {
+  int tID = teensyID[id];
   int pixel[] = new int[8];
   int mask;
 
   Segment currentS[] = new Segment[8];
-  arrayCopy(teensies[teensyID].channel, currentS);
+  arrayCopy(teensies[tID].channel, currentS);
   int currentLED[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-  for (int i = 0; i < maxLeds[teensyID]; i++) {
+  for (int i = 0; i < maxLeds[id]; i++) {
 
     for (int j = 0; j < 8; j++) {
       if (currentS[j] == null) pixel[j] = 0;
