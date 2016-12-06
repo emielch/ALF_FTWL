@@ -10,8 +10,11 @@ void setup() {
 
 void draw() {
   //println(frameRate);
+  colorMode(HSB);
+  int hue = floor((millis()%64000)/250);
   
   background(0);
+  bgNoise(color(hue,255,64), 0.001);
   //fill(255, 255, 0);
   //rectMode(CENTER);
   //rect(mouseX, mouseY, 200, 200);

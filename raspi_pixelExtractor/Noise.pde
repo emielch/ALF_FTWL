@@ -4,10 +4,12 @@ void bgNoise(color c, float speed){
   float g = c >> 8 & 0xFF;
   float b = c & 0xFF;
   colorMode(RGB, 255);
-  for(int x = 0; x < width; x++){
-    for(int y = 0; y < height; y++){
-      float n = noise(x,y,speed*millis());
-      set(x,y, color(r*n, g*n, b*n));
+  for(int si = 0; si < segments.size(); si++){
+    Segment s = segments.get(si);
+    for(int li = 0; li < s.leds.length; li++){
+      LED l = s.leds[li];
+      float n = noise(l.posX*0.02,l.posY*0.02,speed*millis());
+      set(l.posX,l.posY, color(r*n, g*n, b*n));
     }
   }
 }
