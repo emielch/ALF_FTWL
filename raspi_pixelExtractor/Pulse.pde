@@ -16,19 +16,38 @@ void firePulseToMouse(){
     if(random(1) < 0.5) dir = 1;
     else dir = -1;
     colorMode(RGB);
-    firePulse(s, mouseX, mouseY, dir, 10, color(255, 230, 180), floor(random(10,200)));
+    firePulse(s, mouseX, mouseY, dir, 10, color(255, 230, 180), floor(random(10,200)), 100000);
     lastPulse = millis();
   }
 }
 
-void firePulse(Segment from, int tx, int ty, int dir, int size, color c, int speed){
+void firePulseFromMouse(){
+  int maxDist = 20;
+  Segment start = segments.get(0);
+  int dir = 0;
+  for(Segment s : segments){
+    float d = dist(mouseX, mouseY, s.startX, s.startY);
+    if(d < maxDist){
+      dir = 1;
+      firePulse(s, floor(random(width)), floor(random(height)), dir, 10, color(255, random(100,150), random(0,50)), floor(random(50,200)), floor(random(200, 1000)));
+    }
+    d = dist(mouseX, mouseY, s.endX, s.endY);
+    if(d < maxDist){
+      dir = -1;
+      firePulse(s, floor(random(width)), floor(random(height)), dir, 10, color(255, random(100,150), random(0,100)), floor(random(50,200)), floor(random(200,1000)));
+    }
+  }
+  lastPulse = millis();
+}
+
+void firePulse(Segment from, int tx, int ty, int dir, int size, color c, int speed, int lifeTime){
   Segment[] path = getPath(from, tx, ty, dir);
   for(int i = 0; i < path.length; i++){ 
     Segment p = path[i];
     //println(p.startX +"\t"+ p.startY +"\t"+ p.endX +"\t"+ p.endY);
     //text(i, p.startX+(p.endX-p.startX)/2, p.startY+(p.endY-p.startY)/2);
   }
-  pulses.add(new Pulse(path, dir, size, c, speed));
+  pulses.add(new Pulse(path, dir, size, c, speed, lifeTime));
 }
 
 void drawPulses(){
@@ -38,6 +57,8 @@ void drawPulses(){
   for(Pulse p : removePulses){
     pulses.remove(p);
   }
+  imageMode(CENTER);
+  colorMode(RGB);
   for(Pulse p : pulses){
     p.draw();
   }
@@ -46,14 +67,17 @@ void drawPulses(){
 class Pulse{
   int posX, posY;
   Segment[] path;
-  int cs;
+  int currentS;
   int segStart;
   int size;
   int dir;
-  color c;
+  float r, g, b;
+  float colorScale = 1.0;
   int speed;
+  int birthTime;
+  int lifeTime;
   
-  Pulse(Segment[] path, int dir, int size, color c, int speed){
+  Pulse(Segment[] path, int dir, int size, color c, int speed, int lifeTime){
     this.path = path;
     if(dir == 0){
       posX = path[0].startX;
@@ -64,36 +88,44 @@ class Pulse{
       posY = path[0].endY;
     }
     segStart = millis();
+    birthTime = millis();
     this.dir = dir;
     this.size = size;
-    this.c = c;
+    r = c >> 16 & 0xFF;
+    g = c >> 8 & 0xFF;
+    b = c & 0xFF;
     this.speed = speed;
+    this.lifeTime = lifeTime;
   }
   
   void update(){
-    float relPos = (float)(millis()-segStart)/(1000 * ((float) path[cs].ledN / (float) speed));
+    float relPos = (float)(millis()-segStart)/(1000 * ((float) path[currentS].ledN / (float) speed));
     if(relPos > 1.0){ 
-      if(cs == path.length-1){ 
+      if(currentS == path.length-1){ 
         removePulses.add(this);
         return;
       }
-      dir = getDir(path[cs], path[++cs]);
+      colorScale = 1-(millis()-birthTime) / (float)lifeTime;
+      if(colorScale < 0){
+        removePulses.add(this);
+        return;
+      }
+      dir = getDir(path[currentS], path[++currentS]);
       relPos = 0.0;
       segStart = millis();
     }
     if(dir > 0){
-      posX = (int)lerp(path[cs].startX, path[cs].endX, relPos);
-      posY = (int)lerp(path[cs].startY, path[cs].endY, relPos);
+      posX = (int)lerp(path[currentS].startX, path[currentS].endX, relPos);
+      posY = (int)lerp(path[currentS].startY, path[currentS].endY, relPos);
     }
     else{
-      posX = (int)lerp(path[cs].endX, path[cs].startX, relPos);
-      posY = (int)lerp(path[cs].endY, path[cs].startY, relPos);
+      posX = (int)lerp(path[currentS].endX, path[currentS].startX, relPos);
+      posY = (int)lerp(path[currentS].endY, path[currentS].startY, relPos);
     }
   }
   
   void draw(){
-    imageMode(CENTER);
-    tint(c);
+    tint(colorScale*r, colorScale*g, colorScale*b);
     image(pulseSprite, posX, posY, size, size);
   }
   
