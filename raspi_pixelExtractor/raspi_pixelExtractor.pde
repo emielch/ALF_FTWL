@@ -1,24 +1,18 @@
 
 void setup() {
-  size(1266, 800, P2D);
+  size(1266, 800);
+  background(0);
   frameRate(1000);
   serialSetup();
   senderSetup();
-  setupRandomWalkPulses(300);
+  setupPulses();
 }
 
 
 void draw() {
-  //println(frameRate);
-  colorMode(HSB);
-  int hue = floor((millis()%64000)/250);
-  
+  println(frameRate);
   background(0);
-  bgNoise(color(hue,255,64), 0.001);
-  //fill(255, 255, 0);
-  //rectMode(CENTER);
-  //rect(mouseX, mouseY, 200, 200);
-  //testSegmentCounts(1);
-  randomWalkPulses();
+  firePulseToMouse();
+  drawPulses();
   sendFrame();
 }
