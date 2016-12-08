@@ -3,6 +3,8 @@ ArrayList<Segment> segments = new ArrayList<Segment>();
 static final int TEENSY_NUMBER = 7;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
 
+PGraphics mask;
+
 void importMesh(String filename){
   
   JSONObject json = loadJSONObject(filename);
@@ -21,6 +23,34 @@ void importMesh(String filename){
     teensies[i] = new Teensy(ts.getJSONObject(i));
   } 
   
+}
+
+void createMeshMask(){  
+  PGraphics black = createGraphics(width,height,P2D);
+  black.beginDraw();
+  black.background(0);
+  black.endDraw();
+  
+  mask = createGraphics(width, height, P2D);
+  
+  mask.beginDraw();
+  mask.background(255);
+  mask.stroke(0);
+  mask.strokeWeight(2);
+  for(Segment s : segments){
+    mask.line(s.startX, s.startY, s.endX, s.endY);
+  }
+  
+  mask.endDraw(); 
+  
+  black.mask(mask);
+  
+  mask = black;
+}
+
+void maskMesh(){
+  imageMode(CORNER);
+  image(mask,0,0);
 }
 
 class Teensy{

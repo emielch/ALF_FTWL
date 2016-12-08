@@ -6,16 +6,20 @@ void setup() {
   serialSetup();
   senderSetup();
   setupPulses();
+  createMeshMask();
 }
 
 
 void draw() {
   println(frameRate);
   background(0);
-  //firePulseToMouse();
+  
   if(mousePressed){ 
     firePulseFromMouse();
   }
+  
   drawPulses();
+  maskMesh();
+  
   sendFrame();
 }
