@@ -53,6 +53,19 @@ void maskMesh(){
   image(mask,0,0);
 }
 
+Segment closestSegment(int x, int y){
+  float dist = 1000000;
+  Segment closest = segments.get(0);
+  for(Segment s : segments){
+    float d = s.getDistance(x,y);
+    if(d < dist){ 
+      dist = d;
+      closest = s;
+    }
+  }
+  return closest;
+}
+
 class Teensy{
   Segment channel[] = new Segment[8];
   
@@ -126,6 +139,13 @@ class Segment{
     if(mx <= 0) return dist(x,y,startX,startY);
     else if(mx >= d) return dist(x,y,endX,endY);
     else return dist(x, y, startX+mx*ca, startY+mx*sa);
+  }
+  
+  int closestLED(int x, int y){
+    float mx = (-startX+x)*ca + (-startY+y)*sa;
+    mx = constrain(mx, 0.01, d-0.01);
+    float ledD = d/ledN;
+    return floor(mx/ledD);
   }
   
   //Convert indices to Segments again

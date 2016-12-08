@@ -16,38 +16,28 @@ void firePulseToMouse(){
     if(random(1) < 0.5) dir = 1;
     else dir = -1;
     colorMode(RGB);
-    firePulse(s, mouseX, mouseY, dir, 10, color(255, 230, 180), floor(random(10,200)), 100000);
+    firePulse(s, mouseX, mouseY, dir, 10, floor(random(s.ledN)), color(255, 230, 180), floor(random(10,200)), 100000);
     lastPulse = millis();
   }
 }
 
 void firePulseFromMouse(){
-  int maxDist = 20;
-  Segment start = segments.get(0);
-  int dir = 0;
-  for(Segment s : segments){
-    float d = dist(mouseX, mouseY, s.startX, s.startY);
-    if(d < maxDist){
-      dir = 1;
-      firePulse(s, floor(random(width)), floor(random(height)), dir, 10, color(255, random(100,150), random(0,50)), floor(random(50,200)), floor(random(200, 1000)));
-    }
-    d = dist(mouseX, mouseY, s.endX, s.endY);
-    if(d < maxDist){
-      dir = -1;
-      firePulse(s, floor(random(width)), floor(random(height)), dir, 10, color(255, random(100,150), random(0,100)), floor(random(50,200)), floor(random(200,1000)));
-    }
-  }
-  lastPulse = millis();
+  Segment start = closestSegment(mouseX, mouseY);
+  int startLED = start.closestLED(mouseX,mouseY);
+  
+  int dir = (random(1) > 0.5 ? 1 : -1);
+  
+  firePulse(start, floor(random(width)), floor(random(height)), dir, 10, startLED, color(255, random(100,150), random(0,50)), floor(random(50,200)), floor(random(200, 1000)));
 }
 
-void firePulse(Segment from, int tx, int ty, int dir, int size, color c, int speed, int lifeTime){
+void firePulse(Segment from, int tx, int ty, int dir, int size, int startLED, color c, int speed, int lifeTime){
   Segment[] path = getPath(from, tx, ty, dir);
   for(int i = 0; i < path.length; i++){ 
     Segment p = path[i];
     //println(p.startX +"\t"+ p.startY +"\t"+ p.endX +"\t"+ p.endY);
     //text(i, p.startX+(p.endX-p.startX)/2, p.startY+(p.endY-p.startY)/2);
   }
-  pulses.add(new Pulse(path, dir, size, c, speed, lifeTime));
+  pulses.add(new Pulse(path, dir, size, startLED, c, speed, lifeTime));
 }
 
 void drawPulses(){
@@ -77,17 +67,12 @@ class Pulse{
   int birthTime;
   int lifeTime;
   
-  Pulse(Segment[] path, int dir, int size, color c, int speed, int lifeTime){
+  Pulse(Segment[] path, int dir, int size, int startLED, color c, int speed, int lifeTime){
     this.path = path;
-    if(dir == 0){
-      posX = path[0].startX;
-      posY = path[0].startY;
-    }
-    else{
-      posX = path[0].endX;
-      posY = path[0].endY;
-    }
-    segStart = millis();
+    posX = path[0].leds[startLED].posX;
+    posY = path[0].leds[startLED].posY;
+    if(dir > 0) segStart = (int)(millis()-1000*((float)startLED / (float) speed));
+    else segStart = (int)(millis()-1000*((float)(path[0].ledN-startLED) / (float) speed));
     birthTime = millis();
     this.dir = dir;
     this.size = size;
