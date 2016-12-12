@@ -4,7 +4,7 @@ int lastUpdate = 0;
 Segment currentS[] = new Segment[8];
 
 void testSegmentCounts(int tid){
-  if(millis() > lastUpdate + timePerSegment){
+  //if(millis() > lastUpdate + timePerSegment){
     background(0);
     for(int i = 0; i < 8; i++){
       if(currentS[i] == null) currentS[i] = teensies[tid].channel[i];
@@ -18,5 +18,5 @@ void testSegmentCounts(int tid){
       }
     }
     lastUpdate = millis();
-  }
+  //}
 }
