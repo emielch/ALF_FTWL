@@ -1,89 +1,114 @@
+#include <Colore.h>
 #include <Adafruit_NeoPixel.h>
 
-#define PIN 5
-#define LED_AM 120
-
-Adafruit_NeoPixel leds = Adafruit_NeoPixel(LED_AM, PIN, NEO_GRB + NEO_KHZ800);
+#define TOUCHBAR_ID 0
 
 
 #define TOUCH_AM 12
-byte touchPin[TOUCH_AM] = {0, 1, 15, 16, 17, 18, 19, 22, 23, 25, 32, 33};
-//byte touchPin[TOUCH_AM] = {19, 22, 23, 25, 32, 33, 18, 17, 16, 15, 1, 0};
 
-float touchVals[TOUCH_AM];
-float touchCalib[TOUCH_AM];
+#define MAX_POS 12
+
+#if TOUCHBAR_ID==0
+byte touchPin[TOUCH_AM] = {0, 1, 15, 16, 17, 18, 19, 22, 23, 25, 32, 33};
+#else
+byte touchPin[TOUCH_AM] = {19, 22, 23, 25, 32, 33, 18, 17, 16, 15, 1, 0};
+#endif
+
+float touchCalibVals[TOUCH_AM];
+float touchRawVals[TOUCH_AM];
+float touchMin[TOUCH_AM];
+float touchMax[TOUCH_AM];
+
+float touchPos[MAX_POS];
+
 int samples = 50;
-int calibSamples = 100;
+
+elapsedMillis sinceCalibCount = 0;
+unsigned int calibDelay = 2000;
 
 void setup() {
-  calibTouchPins();
+  setupLeds();
 
-  leds.begin();
+  for (int i = 0; i < TOUCH_AM; i++) {
+    touchMin[i] = 1000000;
+    touchMax[i] = -1;
+  }
 }
 
 void loop() {
+  calibCounter();
   readTouchPins();
+  calcTouchPos();
+  
   printTouchVals();
-  calcLeds();
-  leds.show();
+  
+  updateLeds();
 }
 
-void calcLeds() {
-  float maxVal = 0;
-  int maxID = -1;
 
-  for (int i = 0; i < TOUCH_AM; i++) {
-    float val = touchVals[i] - touchCalib[i];
-    if (val > maxVal) {
-      maxVal = val;
-      maxID = i;
-    }
-  }
+void calibCounter() {
+  if (sinceCalibCount > calibDelay) {
+    sinceCalibCount = 0;
 
-  int ledStart = maxID * (LED_AM / 12.);
-  int ledEnd = (maxID + 1) * (LED_AM / 12.);
-  for (int i = 0; i < LED_AM; i++) {
-    if (i > ledStart && i < ledEnd) {
-      leds.setPixelColor(i, 10, 20, 50);
-    } else {
-      leds.setPixelColor(i, 10, 0, 0);
+    for (int i = 0; i < TOUCH_AM; i++) {
+      touchMin[i]++;
+      touchMax[i]--;
     }
   }
 }
+
 
 
 void readTouchPins() {
   for (int i = 0; i < TOUCH_AM; i++) {
-    touchVals[i] = 0;
+    touchRawVals[i] = 0;
   }
 
   for (int j = 0; j < samples; j++) {
     for (int i = 0; i < TOUCH_AM; i++) {
-      touchVals[i] += touchRead(touchPin[i]) / float(samples);
+      touchRawVals[i] += touchRead(touchPin[i]) / float(samples);
     }
+  }
+
+  for (int i = 0; i < TOUCH_AM; i++) {
+    if (touchRawVals[i] < touchMin[i]) touchMin[i] = touchRawVals[i];
+    if (touchRawVals[i] > touchMax[i]) touchMax[i] = touchRawVals[i];
+    touchCalibVals[i] = mapFloat(touchRawVals[i], touchMin[i], touchMax[i], 0, 1);
   }
 }
 
-void calibTouchPins() {
+void calcTouchPos() {
   for (int i = 0; i < TOUCH_AM; i++) {
-    touchCalib[i] = 0;
-  }
-  for (int j = 0; j < calibSamples; j++) {
-    for (int i = 0; i < TOUCH_AM; i++) {
-      touchCalib[i] += touchRead(touchPin[i]) / float(calibSamples);
+    if (touchCalibVals[i] > 0.2) {
+      touchPos[i] = i;
+    } else {
+      touchPos[i] = -1;
     }
   }
 }
 
 
 void printTouchVals() {
-  for (int i = 0; i < TOUCH_AM; i++) {
-    Serial.print(touchVals[i] - touchCalib[i]);
-    Serial.print('\t');
+  for (int i = 0; i < MAX_POS; i++) {
+    if (touchPos[i] > -1) {
+      Serial.print(touchCalibVals[i]);
+      if (i != MAX_POS - 1) Serial.print('\t');
+    }
   }
   Serial.println();
+
+  //  for (int i = 0; i < TOUCH_AM; i++) {
+  //    Serial.print(touchCalibVals[i]);
+  //    Serial.print('\t');
+  //  }
+  //  Serial.println();
 }
 
+
+int mapFloat(float value, float low1, float high1, float low2, float high2) {
+  float mapped = low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+  return mapped;
+}
 
 
 
