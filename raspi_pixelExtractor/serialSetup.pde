@@ -20,7 +20,7 @@ void serialSetup() {
   println();
   if (numPorts == 0){
     println("No Teensy's found");
-    exit();
+    //exit();
   }
   
 }

@@ -47,6 +47,7 @@ void drawPulses(){
   for(Pulse p : removePulses){
     pulses.remove(p);
   }
+  removePulses = new ArrayList<Pulse>();
   imageMode(CENTER);
   colorMode(RGB);
   for(Pulse p : pulses){
