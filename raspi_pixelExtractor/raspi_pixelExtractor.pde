@@ -1,3 +1,5 @@
+int frameStart, frameTime;
+
 
 void setup() {
   size(1266, 800, P2D);
@@ -12,20 +14,23 @@ void setup() {
 
 
 void draw() {
-  //println(frameRate);
-  background(0);
+    frameTime = millis()-frameStart;
+    frameStart = millis();
+    
+    //println(frameRate);
+    background(20,8,0);
   
-  if(mousePressed){ 
-    //firePulseFromMouse();
-    //testSegmentCounts(1);
-    drops.add(new Drop(mouseX,mouseY,random(1,50),color(0, random(0,128), random(0,255))));
-    delay(300);
-  }
+    if (mousePressed) { 
+      //firePulseFromMouse();
+      //testSegmentCounts(1);
+      colorMode(HSB, 255);
+      drops.add(new Drop(mouseX,mouseY,20,color(random(105, 170), random(200, 255), 255)));
+      delay(300);
+    }
+    
+    drawDrops();
+    drawPulses();
+    maskMesh();
   
-  
-  drawDrops();
-  drawPulses();
-  maskMesh();
-  
-  sendFrame();
+    sendFrame();
 }

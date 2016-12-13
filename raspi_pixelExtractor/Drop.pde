@@ -3,8 +3,10 @@ ArrayList<Drop> drops;
 ArrayList<Drop> removeDrops;
 ArrayList<Drop> addDrops;
 
+int mergeRange = 3;
+
 void setupDrops(){
-  dropSprite = loadImage("BlobSprite.png");
+  dropSprite = loadImage("DropSprite.png");
   drops = new ArrayList<Drop>();
   removeDrops = new ArrayList<Drop>();
   addDrops = new ArrayList<Drop>();
@@ -16,11 +18,12 @@ void drawDrops(){
   removeDrops = new ArrayList<Drop>();
   for(Drop d : addDrops) drops.add(d);
   addDrops = new ArrayList<Drop>();
+  imageMode(CENTER);
   for(Drop d : drops) d.draw();
 }
 
 class Drop{  
-  int x, y;
+  float x, y;
   
   static final float minSpeed = 1; 
   static final float maxSpeed = 50;
@@ -48,7 +51,7 @@ class Drop{
   Drop(Segment s, float size, color c){
     currentS = s;
     
-    if(s.startY > s.endY){
+    if(s.startY < s.endY){
       dir = 1;
       this.x = s.startX;
       this.y = s.startY;
@@ -64,23 +67,21 @@ class Drop{
   }
   
   void update(){
-    if(size < 3) speed = 0;
-    else if(size > 5) speed = size*abs(currentS.sa)+minSpeed; //Minimum speed since we 
-    if(speed > maxSpeed) speed = maxSpeed;
-    
-    x += speed*currentS.ca;
-    y += speed*currentS.sa;
-    
     if(currentS.startX < currentS.endX && (x < currentS.startX || x > currentS.endX)) switchSegments();
     else if(currentS.startX > currentS.endX && (x < currentS.endX || x > currentS.startX)) switchSegments();
     else if(currentS.startY < currentS.endY && y > currentS.endY) switchSegments();
     else if(currentS.startY > currentS.endY && y > currentS.startY) switchSegments();
     
+    if(size < 3) speed = 0;
+    else if(size > 5) speed = 2*size*abs(currentS.sa)+minSpeed;
+    if(speed > maxSpeed) speed = maxSpeed;
+    
+    x += speed*currentS.ca*((float)frameTime/1000)*dir;
+    y += speed*currentS.sa*((float)frameTime/1000)*dir;
+    
     //Check if we reached the end of the segment
     //If so, switch segments, but only use segments which move down. If both move down, split into two drops
-    //Check if we are close to another drop (distance of ~3px) on this segment (store in list in segment!)
-    
-    println(x);
+    //Check if we are close to another drop (distance of ~3px) on this segment (store in list in segment!)    
   }
   
   void draw(){
@@ -93,8 +94,8 @@ class Drop{
     if(candidates.length == 0) removeDrops.add(this);
     else if(candidates.length == 1) switchTo(candidates[0]);
     else{
-      float tsa = candidates[0].sa + candidates[1].sa;
-      float ratio = candidates[0].sa/tsa;
+      float tsa = abs(candidates[0].sa) + abs(candidates[1].sa);
+      float ratio = abs(candidates[0].sa)/tsa;
       addDrops.add(new Drop(candidates[0], size*ratio, c));
       size *= 1-ratio;
       switchTo(candidates[1]);
@@ -102,8 +103,8 @@ class Drop{
   }
   
   void switchTo(Segment s){
-    if(currentS.sa > 0) dir = 1;
-    else if(currentS.sa < 0) dir = -1;
+    if(s.sa > 0) dir = 1;
+    else if(s.sa < 0) dir = -1;
     else{
       if(s.sn[0] == currentS || s.sn[1] == currentS) dir = 1;
       else dir = -1;
@@ -116,7 +117,7 @@ class Drop{
       x = s.endX;
       y = s.endY;
     }
-    currentS = currentS.en[0];
+    currentS = s;
   }
   
   Segment[] nextCandidates(){
@@ -129,8 +130,12 @@ class Drop{
     }
     ArrayList<Segment> down = new ArrayList<Segment>();
     for(Segment s : notNull){
-      if((s.sn[0] == currentS || s.sn[1] == currentS) && s.sa >= 0) down.add(s);
-      else if((s.en[0] == currentS || s.en[1] == currentS) && s.sa <= 0) down.add(s);
+      if((s.sn[0] == currentS || s.sn[1] == currentS) && s.sa >= 0){ 
+        down.add(s);
+      }
+      else if((s.en[0] == currentS || s.en[1] == currentS) && s.sa <= 0){ 
+        down.add(s);
+      }
     }
     
     Segment[] result = new Segment[down.size()];
