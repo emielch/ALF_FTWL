@@ -29,17 +29,30 @@ boolean newData = false;
 const int ledPin = 13;
 boolean ledState = false;
 
+int rainbowColors[180];
+
 void setup() {
-  pinMode(ledPin,OUTPUT);
+  pinMode(ledPin, OUTPUT);
   switchLed();
   Serial.setTimeout(50);
+
+  for (int i = 0; i < 180; i++) {
+    int hue = i * 2;
+    int saturation = 100;
+    int lightness = 10;
+    // pre-compute the 180 rainbow colors
+    rainbowColors[i] = makeColor(hue, saturation, lightness);
+  }
   leds.begin();
-  leds.show();
+
+  while (!Serial) {
+    rainbow(10, 2500);
+  }
 }
 
-void switchLed(){
+void switchLed() {
   ledState = !ledState;
-  digitalWrite(ledPin,ledState);
+  digitalWrite(ledPin, ledState);
 }
 
 void loop() {
