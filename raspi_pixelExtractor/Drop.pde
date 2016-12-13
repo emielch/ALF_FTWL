@@ -14,7 +14,13 @@ void setupDrops(){
 
 void drawDrops(){
   for(Drop d : drops) d.update();
-  for(Drop d : removeDrops) drops.remove(d);
+  for(Drop d : drops){ 
+    if(d.merged) removeDrops.add(d);
+  }
+  for(Drop d : removeDrops){ 
+    while(drops.remove(d)) println("REMOVED!");
+    println();
+  }
   removeDrops = new ArrayList<Drop>();
   for(Drop d : addDrops) drops.add(d);
   addDrops = new ArrayList<Drop>();
@@ -74,7 +80,7 @@ class Drop{
   }
   
   void update(){
-    index = drops.indexOf(this);
+    println(merged);
     if(currentS.startX < currentS.endX && (x < currentS.startX || x > currentS.endX)) switchSegments();
     else if(currentS.startX > currentS.endX && (x < currentS.endX || x > currentS.startX)) switchSegments();
     else if(currentS.startY < currentS.endY && y > currentS.endY) switchSegments();
@@ -112,7 +118,6 @@ class Drop{
   void merge(Drop d){
     if(!merged && !d.merged){ //Prevent merged drops merging again with this or other drops
       d.merged = true;
-      removeDrops.add(d);
       removeSegmentDrops.add(d);
       x = (x+d.x)/2;
       y = (y+d.y)/2;

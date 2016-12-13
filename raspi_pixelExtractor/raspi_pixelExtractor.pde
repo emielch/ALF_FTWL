@@ -28,11 +28,6 @@ void draw() {
       delay((int)random(1,100));
     }
     
-    print(drops.size());
-    int tot = 0;
-    for(Segment s : segments) tot += s.drops.size();
-    println("\t"+tot);
-    
     drawDrops();
     drawPulses();
     maskMesh();
