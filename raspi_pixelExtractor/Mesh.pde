@@ -115,6 +115,8 @@ class Teensy{
 class Segment{
   int startX, startY, endX, endY, ledN;
   
+  ArrayList<Drop> drops;
+  
   //The indices of the segments above, these can actually be serialized
   Segment next;
   int nexti = -1;
@@ -131,6 +133,7 @@ class Segment{
   
   Segment(JSONObject json){
     fromJson(json);
+    drops = new ArrayList<Drop>();
   }
   
   float getDistance(float x, float y){

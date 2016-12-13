@@ -24,9 +24,14 @@ void draw() {
       //firePulseFromMouse();
       //testSegmentCounts(1);
       colorMode(HSB, 255);
-      drops.add(new Drop(mouseX,mouseY,20,color(random(105, 170), random(200, 255), 255)));
-      delay(300);
+      drops.add(new Drop(mouseX,mouseY,random(1,10),color(random(105, 170), random(200, 255), 255)));
+      delay((int)random(1,100));
     }
+    
+    print(drops.size());
+    int tot = 0;
+    for(Segment s : segments) tot += s.drops.size();
+    println("\t"+tot);
     
     drawDrops();
     drawPulses();
