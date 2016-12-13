@@ -1,14 +1,14 @@
 #include <Colore.h>
 #include <Adafruit_NeoPixel.h>
 
-#define TOUCHBAR_ID 0
+#define TOUCHBAR_ID 100 // 100 and 101 are touchbars
 
 
 #define TOUCH_AM 12
 
 #define MAX_POS 12
 
-#if TOUCHBAR_ID==0
+#if TOUCHBAR_ID==100
 byte touchPin[TOUCH_AM] = {0, 1, 15, 16, 17, 18, 19, 22, 23, 25, 32, 33};
 #else
 byte touchPin[TOUCH_AM] = {19, 22, 23, 25, 32, 33, 18, 17, 16, 15, 1, 0};
@@ -36,13 +36,32 @@ void setup() {
 }
 
 void loop() {
+  checkSerial();
   calibCounter();
   readTouchPins();
   calcTouchPos();
-  
+
   printTouchVals();
-  
+
   updateLeds();
+}
+void checkSerial() {
+  if (Serial.available() > 0) {
+    int startChar = Serial.read();
+    if (startChar == '?') {
+      // when the video application asks, give it all our info
+      // for easy and automatic configuration
+      Serial.print(TOUCHBAR_ID);
+      Serial.write(',');
+      Serial.print(0);
+      Serial.write(',');
+      Serial.print(0);
+      Serial.println();
+
+    } else if (startChar >= 0) {
+      // discard unknown characters
+    }
+  }
 }
 
 
