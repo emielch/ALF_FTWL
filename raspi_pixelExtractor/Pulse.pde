@@ -27,7 +27,8 @@ void firePulseFromMouse(){
   
   int dir = (random(1) > 0.5 ? 1 : -1);
   
-  firePulse(start, floor(random(width)), floor(random(height)), dir, 10, startLED, color(255, random(100,150), random(0,50)), floor(random(50,200)), floor(random(200, 1000)));
+  colorMode(HSB);
+  firePulse(start, floor(random(width)), floor(random(height)), dir, 10, startLED, color(32, random(76), 255), floor(random(50,200)), floor(random(200, 1000)));
 }
 
 void firePulse(Segment from, int tx, int ty, int dir, int size, int startLED, color c, int speed, int lifeTime){

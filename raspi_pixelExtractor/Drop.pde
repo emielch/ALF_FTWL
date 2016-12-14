@@ -17,10 +17,7 @@ void drawDrops(){
   for(Drop d : drops){ 
     if(d.merged) removeDrops.add(d);
   }
-  for(Drop d : removeDrops){ 
-    while(drops.remove(d)) println("REMOVED!");
-    println();
-  }
+  for(Drop d : removeDrops) drops.remove(d);
   removeDrops = new ArrayList<Drop>();
   for(Drop d : addDrops) drops.add(d);
   addDrops = new ArrayList<Drop>();
@@ -58,6 +55,8 @@ class Drop{
 
     this.size = size;    
     this.c = c;
+    
+    removeSegmentDrops = new ArrayList<Drop>();
   }
   
   Drop(Segment s, float size, color c){
@@ -77,16 +76,16 @@ class Drop{
     
     this.size = size;    
     this.c = c;
+    
+    removeSegmentDrops = new ArrayList<Drop>();
   }
   
   void update(){
-    println(merged);
     if(currentS.startX < currentS.endX && (x < currentS.startX || x > currentS.endX)) switchSegments();
     else if(currentS.startX > currentS.endX && (x < currentS.endX || x > currentS.startX)) switchSegments();
     else if(currentS.startY < currentS.endY && y > currentS.endY) switchSegments();
     else if(currentS.startY > currentS.endY && y > currentS.startY) switchSegments();
     
-    removeSegmentDrops = new ArrayList<Drop>();
     for(Drop d : currentS.drops){
       //if(drops.indexOf(d) == -1) exit();
       if(dist(d.x,d.y,x,y) < mergeRange && d != this){ 
@@ -94,6 +93,7 @@ class Drop{
       }
     }
     for(Drop d : removeSegmentDrops) currentS.drops.remove(d);
+    removeSegmentDrops = new ArrayList<Drop>();
     
     if(size < 3) speed = 0;
     else if(size > 5) speed = 2*size*abs(currentS.sa)+minSpeed;
@@ -123,11 +123,9 @@ class Drop{
       y = (y+d.y)/2;
       colorMode(RGB);
       float totSize = size+d.size;
-      //println(red(c)+"\t"+green(c)+"\t"+blue(c)+"\t\t"+red(d.c)+"\t"+green(d.c)+"\t"+blue(d.c));
       float r = (d.size*(d.c >> 16 & 0xFF)+size*(c >> 16 & 0xFF))/totSize;
       float g = (d.size*(d.c >> 8 & 0xFF)+size*(c >> 8 & 0xFF))/totSize;
       float b = (d.size*(d.c & 0xFF)+size*(c & 0xFF))/totSize;
-      //println(r+"\t"+g+"\t"+b+"\t\t"+size+"\t"+d.size);
       c = color(r,g,b);
       size = totSize;
     }
