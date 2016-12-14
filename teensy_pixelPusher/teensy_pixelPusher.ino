@@ -38,6 +38,9 @@ boolean ledState = false;
 
 int rainbowColors[180];
 
+unsigned int screenSaverDelay = 5000;
+elapsedMillis sinceNewFrame = screenSaverDelay;
+
 void setup() {
 #if TEENSY_ID == 10
   for (int i = 0; i < HALL_AM; i++) {
@@ -62,10 +65,6 @@ void setup() {
     rainbowColors[i] = makeColor(hue, saturation, lightness);
   }
   leds.begin();
-
-  while (!Serial) {
-    rainbow(10, 2500);
-  }
 }
 
 void switchLed() {
@@ -74,6 +73,11 @@ void switchLed() {
 }
 
 void loop() {
+  if(sinceNewFrame>screenSaverDelay){
+    rainbow(10, 2500);
+  }
+
+  
   //
   // wait for a Start-Of-Message character:
   //
@@ -102,6 +106,7 @@ void loop() {
       leds.show();
       switchLed();
       newData = false;
+      sinceNewFrame = 0;
     }
 
   } else if (startChar == '?') {
