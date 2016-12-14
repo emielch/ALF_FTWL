@@ -4,7 +4,7 @@ ArrayList<Pulse> removePulses;
 int lastPulse;
 
 void setupPulses(){
-  pulseSprite = loadImage("BlobSprite.png");
+  pulseSprite = loadImage("DropSprite.png");
   pulses = new ArrayList<Pulse>();
   removePulses = new ArrayList<Pulse>();
 }
@@ -27,10 +27,24 @@ void firePulseFromMouse(){
   
   int dir = (random(1) > 0.5 ? 1 : -1);
   
-  firePulse(start, floor(random(width)), floor(random(height)), dir, 10, startLED, color(255, random(100,150), random(0,50)), floor(random(50,200)), floor(random(200, 1000)));
+  colorMode(HSB);
+  firePulse(start, floor(random(width)), floor(random(height)), dir, 10, startLED, color(32, random(76), 255), floor(random(50,200)), floor(random(200, 1000)));
 }
 
 void firePulse(Segment from, int tx, int ty, int dir, int size, int startLED, color c, int speed, int lifeTime){
+  Segment[] path = getPath(from, tx, ty, dir);
+  for(int i = 0; i < path.length; i++){ 
+    Segment p = path[i];
+    //println(p.startX +"\t"+ p.startY +"\t"+ p.endX +"\t"+ p.endY);
+    //text(i, p.startX+(p.endX-p.startX)/2, p.startY+(p.endY-p.startY)/2);
+  }
+  pulses.add(new Pulse(path, dir, size, startLED, c, speed, lifeTime));
+}
+
+void firePulse(int fx, int fy, int tx, int ty, int dir, int size, color c, int speed, int lifeTime){
+  Segment from = closestSegment(fx, fy);
+  int startLED = from.closestLED(fx,fy);
+  
   Segment[] path = getPath(from, tx, ty, dir);
   for(int i = 0; i < path.length; i++){ 
     Segment p = path[i];

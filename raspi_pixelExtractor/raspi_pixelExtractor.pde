@@ -9,7 +9,13 @@ void setup() {
   senderSetup();
   setupPulses();
   setupDrops();
+  setupBlobs();
   createMeshMask();
+  
+  colorMode(HSB);
+  for(int i = 0; i < 20; i++){
+    blobs.add(new Blob(width/2, height/2, (int)random(1000,2000), (int)random(105, 170), (int)random(200, 255), (int)random(20,50), random(1, 30), width/2, 0.01));
+  }
 }
 
 
@@ -17,19 +23,18 @@ void draw() {
     frameTime = millis()-frameStart;
     frameStart = millis();
     
-    //println(frameRate);
-    background(20,8,0);
+    println(frameRate);
+    background(0);
   
-    if (mousePressed) { 
-      //firePulseFromMouse();
-      //testSegmentCounts(1);
-      colorMode(HSB, 255);
-      drops.add(new Drop(mouseX,mouseY,random(1,10),color(random(105, 170), random(200, 255), 255)));
-      delay((int)random(1,100));
+    if (mousePressed) {  
+      blobs.add(new Blob(mouseX,mouseY,(int)random(width), (int)random(height), (int)random(200,500), (int)random(200,255), (int)random(200,255), 200, random(30,50), random(10,30),0.3));
+      delay(100);
     }
     
+    drawBlobs();
     drawDrops();
     drawPulses();
+    
     maskMesh();
   
     sendFrame();
