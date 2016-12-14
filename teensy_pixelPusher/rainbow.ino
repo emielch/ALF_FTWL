@@ -8,22 +8,24 @@
 // the entire 360 degrees of the color wheel:
 // Red -> Orange -> Yellow -> Green -> Blue -> Violet -> Red
 //
-void rainbow(int phaseShift, int cycleTime)
-{
-  int color, x, y, offset, wait;
 
-  wait = cycleTime * 1000 / ledsPerStrip;
-  for (color = 0; color < 180; color++) {
-    digitalWrite(1, HIGH);
-    for (x = 0; x < ledsPerStrip; x++) {
-      for (y = 0; y < 8; y++) {
+int color = 0;
+elapsedMicros sinceLastRainbowFrame = 0;
+
+
+void rainbow(int phaseShift, int cycleTime) {
+  int wait = cycleTime * 1000 / ledsPerStrip;
+  if (sinceLastRainbowFrame > wait) {
+    sinceLastRainbowFrame = 0;
+    for (int x = 0; x < ledsPerStrip; x++) {
+      for (int y = 0; y < 8; y++) {
         int index = (color + x + y * phaseShift / 2) % 180;
         leds.setPixel(x + y * ledsPerStrip, rainbowColors[index]);
       }
     }
     leds.show();
-    digitalWrite(1, LOW);
-    delayMicroseconds(wait);
+    color++;
+    if (color >= 180) color -= 180;
   }
 }
 

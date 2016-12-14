@@ -1,4 +1,4 @@
-#define TEENSY_ID      10
+#define TEENSY_ID      4
 
 #include <OctoWS2811.h>
 
@@ -8,15 +8,15 @@ const int ledsPerStrip = 211;
 #elif TEENSY_ID == 1
 const int ledsPerStrip = 226;
 #elif TEENSY_ID == 2
-const int ledsPerStrip = 208;
+const int ledsPerStrip = 207;
 #elif TEENSY_ID == 3
-const int ledsPerStrip = 229;
+const int ledsPerStrip = 228;
 #elif TEENSY_ID == 4
-const int ledsPerStrip = 226;
+const int ledsPerStrip = 227;
 #elif TEENSY_ID == 5
 const int ledsPerStrip = 229;
 #elif TEENSY_ID == 6
-const int ledsPerStrip = 245;
+const int ledsPerStrip = 243;
 
 // 10 is the faces teensy
 #elif TEENSY_ID == 10
@@ -73,11 +73,11 @@ void switchLed() {
 }
 
 void loop() {
-  if(sinceNewFrame>screenSaverDelay){
+  if (sinceNewFrame > screenSaverDelay) {
     rainbow(10, 2500);
   }
 
-  
+
   //
   // wait for a Start-Of-Message character:
   //
