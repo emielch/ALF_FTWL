@@ -1,7 +1,8 @@
-#define TEENSY_ID      1
+#define TEENSY_ID      10
 
 #include <OctoWS2811.h>
 
+// 0-6 are the wave LEDs teensys
 #if TEENSY_ID == 0
 const int ledsPerStrip = 211;
 #elif TEENSY_ID == 1
@@ -16,6 +17,12 @@ const int ledsPerStrip = 226;
 const int ledsPerStrip = 229;
 #elif TEENSY_ID == 6
 const int ledsPerStrip = 245;
+
+// 10 is the faces teensy
+#elif TEENSY_ID == 10
+const int ledsPerStrip = 180;
+#define HALL_AM 3
+byte hallPins[HALL_AM] = {0, 1, 23};
 #endif
 
 DMAMEM int displayMemory[ledsPerStrip * 6];
@@ -32,6 +39,17 @@ boolean ledState = false;
 int rainbowColors[180];
 
 void setup() {
+#if TEENSY_ID == 10
+  for (int i = 0; i < HALL_AM; i++) {
+    pinMode(hallPins[i], INPUT_PULLUP);
+  }
+  attachInterrupt(hallPins[0], isrRise0, RISING) ;
+  attachInterrupt(hallPins[0], isrFall0, FALLING) ;
+  attachInterrupt(hallPins[1], isrRise1, RISING) ;
+  attachInterrupt(hallPins[1], isrFall1, FALLING) ;
+  attachInterrupt(hallPins[2], isrRise2, RISING) ;
+  attachInterrupt(hallPins[2], isrFall2, FALLING) ;
+#endif
   pinMode(ledPin, OUTPUT);
   switchLed();
   Serial.setTimeout(50);
