@@ -13,6 +13,8 @@ void setupDrops(){
 }
 
 void drawDrops(){
+  imageMode(CENTER);
+  colorMode(RGB);
   for(Drop d : drops) d.update();
   for(Drop d : drops){ 
     if(d.merged) removeDrops.add(d);
@@ -21,7 +23,7 @@ void drawDrops(){
   removeDrops = new ArrayList<Drop>();
   for(Drop d : addDrops) drops.add(d);
   addDrops = new ArrayList<Drop>();
-  imageMode(CENTER);
+  
   for(Drop d : drops) d.draw();
 }
 
@@ -121,7 +123,6 @@ class Drop{
       removeSegmentDrops.add(d);
       x = (x+d.x)/2;
       y = (y+d.y)/2;
-      colorMode(RGB);
       float totSize = size+d.size;
       float r = (d.size*(d.c >> 16 & 0xFF)+size*(c >> 16 & 0xFF))/totSize;
       float g = (d.size*(d.c >> 8 & 0xFF)+size*(c >> 8 & 0xFF))/totSize;

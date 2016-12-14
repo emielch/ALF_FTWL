@@ -9,11 +9,11 @@ void setupBlobs(){
 }
 
 void drawBlobs(){
+  imageMode(CENTER);
+  colorMode(HSB);
   for(Blob b : blobs) b.update();
   for(Blob b : removeBlobs) blobs.remove(b);
   removeBlobs = new ArrayList<Blob>();
-  imageMode(CENTER);
-  colorMode(HSB);
   for(Blob b : blobs) b.draw();
 }
 
