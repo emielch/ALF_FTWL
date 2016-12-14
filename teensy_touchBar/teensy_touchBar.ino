@@ -8,7 +8,7 @@
 
 #define MAX_POS 12
 
-#if TOUCHBAR_ID==100
+#if TOUCHBAR_ID==101
 byte touchPin[TOUCH_AM] = {0, 1, 15, 16, 17, 18, 19, 22, 23, 25, 32, 33};
 #else
 byte touchPin[TOUCH_AM] = {19, 22, 23, 25, 32, 33, 18, 17, 16, 15, 1, 0};
@@ -45,6 +45,7 @@ void loop() {
 
   updateLeds();
 }
+
 void checkSerial() {
   if (Serial.available() > 0) {
     int startChar = Serial.read();
@@ -98,8 +99,8 @@ void readTouchPins() {
 
 void calcTouchPos() {
   for (int i = 0; i < TOUCH_AM; i++) {
-    if (touchCalibVals[i] > 0.2) {
-      touchPos[i] = i;
+    if (touchCalibVals[i] > 0.3) {
+      touchPos[i] = i/float(TOUCH_AM-1);
     } else {
       touchPos[i] = -1;
     }
@@ -110,21 +111,21 @@ void calcTouchPos() {
 void printTouchVals() {
   for (int i = 0; i < MAX_POS; i++) {
     if (touchPos[i] > -1) {
-      Serial.print(touchCalibVals[i]);
+      Serial.print(touchPos[i]);
       if (i != MAX_POS - 1) Serial.print('\t');
     }
   }
   Serial.println();
 
-  //  for (int i = 0; i < TOUCH_AM; i++) {
-  //    Serial.print(touchCalibVals[i]);
-  //    Serial.print('\t');
-  //  }
-  //  Serial.println();
+//    for (int i = 0; i < TOUCH_AM; i++) {
+//      Serial.print(touchCalibVals[i]);
+//      Serial.print('\t');
+//    }
+//    Serial.println();
 }
 
 
-int mapFloat(float value, float low1, float high1, float low2, float high2) {
+float mapFloat(float value, float low1, float high1, float low2, float high2) {
   float mapped = low2 + (high2 - low2) * (value - low1) / (high1 - low1);
   return mapped;
 }
