@@ -4,6 +4,8 @@ static final int TEENSY_NUMBER = 7;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
 
 PGraphics mask;
+int faceX[] = {76, 266, 456};
+int faceY = 600;
 
 void importMesh(String filename){
   

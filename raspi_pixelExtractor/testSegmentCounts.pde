@@ -20,3 +20,17 @@ void testSegmentCounts(int tid){
     lastUpdate = millis();
   //}
 }
+
+void testChannelLocations(int tid, int cid){
+    background(0);
+    Teensy t = teensies[tid];
+    Segment s = t.channel[cid];
+    for(int i = 0; i < 100; i++){
+      for(int j = 0; j < s.leds.length; j++){
+        LED l = s.leds[j];
+        set(l.posX,l.posY,color(255));
+      }
+      s = s.next;
+      if(s == null) break;
+    }
+}

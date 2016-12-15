@@ -1,5 +1,7 @@
 int frameStart, frameTime;
 
+int channel = 0;
+
 
 void setup() {
   size(1266, 800, P2D);
@@ -14,7 +16,7 @@ void setup() {
   
   colorMode(HSB);
   for(int i = 0; i < 20; i++){
-    blobs.add(new Blob(width/2, height/2, (int)random(1000,2000), (int)random(105, 170), (int)random(200, 255), (int)random(20,50), random(1, 30), width/2, 0.01));
+    blobs.add(new Blob(width/2, height/2, (int)random(500,1000), (int)random(105, 170), (int)random(200, 255), (int)random(40,60), random(20, 40), width/2, 0.01));
   }
 }
 
@@ -26,14 +28,20 @@ void draw() {
     println(frameRate);
     background(0);
   
-    if (mousePressed) {  
-      blobs.add(new Blob(mouseX,mouseY,(int)random(width), (int)random(height), (int)random(200,500), (int)random(200,255), (int)random(200,255), 200, random(30,50), random(10,30),0.3));
-      delay(100);
+    if (mousePressed) {
+      sendLove(mouseX,mouseY);
     }
     
     drawBlobs();
     drawDrops();
     drawPulses();
+    
+    //if(keyPressed){ 
+    //  testSegmentCounts(5);
+    //  testChannelLocations(5, channel++);
+    //  if(channel > 7) channel = 0;
+    //  delay(500);
+    //}
     
     maskMesh();
   
