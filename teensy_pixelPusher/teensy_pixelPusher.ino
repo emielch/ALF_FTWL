@@ -1,4 +1,4 @@
-#define TEENSY_ID      4
+#define TEENSY_ID      10
 
 #include <OctoWS2811.h>
 
@@ -20,9 +20,10 @@ const int ledsPerStrip = 243;
 
 // 10 is the faces teensy
 #elif TEENSY_ID == 10
-const int ledsPerStrip = 180;
+const int ledsPerStrip = 125;
 #define HALL_AM 3
 byte hallPins[HALL_AM] = {0, 1, 23};
+boolean hallStates[HALL_AM] = {false, false, false};
 #endif
 
 DMAMEM int displayMemory[ledsPerStrip * 6];
@@ -46,12 +47,6 @@ void setup() {
   for (int i = 0; i < HALL_AM; i++) {
     pinMode(hallPins[i], INPUT_PULLUP);
   }
-  attachInterrupt(hallPins[0], isrRise0, RISING) ;
-  attachInterrupt(hallPins[0], isrFall0, FALLING) ;
-  attachInterrupt(hallPins[1], isrRise1, RISING) ;
-  attachInterrupt(hallPins[1], isrFall1, FALLING) ;
-  attachInterrupt(hallPins[2], isrRise2, RISING) ;
-  attachInterrupt(hallPins[2], isrFall2, FALLING) ;
 #endif
   pinMode(ledPin, OUTPUT);
   switchLed();
@@ -76,6 +71,16 @@ void loop() {
   if (sinceNewFrame > screenSaverDelay) {
     rainbow(10, 2500);
   }
+
+#if TEENSY_ID == 10
+  for (int i = 0; i < HALL_AM; i++) {
+    boolean val = digitalRead(hallPins[i]);
+    if(val!=hallStates[i]){
+      hallStates[i] = val;
+      sendHallState(i,val);
+    }
+  }
+#endif
 
 
   //
