@@ -27,28 +27,17 @@ void senderSetup() {
 }
 
 void sendFrame() {
-  //print('g');
   latchWait(sendLatch);
   sendLatch =new CountDownLatch(1);
- // print('h');
-  //println("we are about creat subdata");
+  
   for (int i=0; i < numPorts; i++) {
-   // SenderThread currSender = senderThreads.get(i);
-    //byte[] ledData = currSender.getWriteBuffer();
-    
-   // print('i');
     mesh2data(mapedData.get(i), ledDataOffset, i);
     mapedData.get(i)[0] = '%';
-    //currSender.setWriteFilled();
   }
- // println("Data is ready to be copied");
- //print('j');
-  if(receiveLatch.getCount()==1){
-     receiveLatch.countDown();
-    }
-  //receiveLatch.countDown();
-  //print('k');
-   
+
+  if (receiveLatch.getCount()==1) {
+    receiveLatch.countDown();
+  }
 }
 
 void latchWait(CountDownLatch latch) {
@@ -61,109 +50,39 @@ void latchWait(CountDownLatch latch) {
 }
 
 void sendController() {
- 
+
   CountDownLatch transmit = new CountDownLatch(numPorts);
   CountDownLatch display = new CountDownLatch(numPorts);
- 
+
   while (true) {
-    
+
     latchWait(receiveLatch);
     receiveLatch = new CountDownLatch(1);
-   // print('a');
-    
-   for (int i=0; i < numPorts; i++) {
+
+    for (int i=0; i < numPorts; i++) {
       SenderThread currSender = senderThreads.get(i);
       currSender.writeBuffer(mapedData.get(i));
     }
-    if(sendLatch.getCount()==1){
-     sendLatch.countDown();
+    if (sendLatch.getCount()==1) {
+      sendLatch.countDown();
     }
-   // print('b');
-    //sendlatch 0
+
     transmit = new CountDownLatch(numPorts);
     for (int i=0; i < numPorts; i++) {
       SenderThread currSender = senderThreads.get(i);
       currSender.sendData(transmit);
     }
     latchWait(transmit);
-  //   print('c');
-    
+
     display = new CountDownLatch(numPorts);
     for (int i=0; i < numPorts; i++) {
       SenderThread currSender = senderThreads.get(i);
       currSender.sendSync(display);
     }
-    
 
     latchWait(display);
- // print('d');
-  
-  
+  }
 }
-  
-}
-
-//void sendController() {
-//  long lastFrame = 0;
-//  long frameTime = 0;
-
-//  while (true) {
-//    delay(1);
-//    if (millis()>lastPrint+printDelay) {
-//      lastPrint = millis();
-
-//      float avg = 0;
-//      for (int i=0; i<frameTimes.size(); i++) {
-//        avg += frameTimes.get(i);
-//      }
-//      avg/=frameTimes.size();
-
-//      float maxFrameTime = -1;
-//      float minFrameTime = -1;
-//      if (frameTimes.size()>0) maxFrameTime=frameTimes.max();
-//      if (frameTimes.size()>0) minFrameTime=frameTimes.min();
-//      println("frameRate   avg: ", int(1000./avg), "\tmin: ", int(1000./maxFrameTime), "\tmax: ", int(1000./minFrameTime));
-//      frameTimes.clear();
-//    }
-
-//    boolean allSent = true;
-//    boolean allSynced = true;
-
-//    for (int i=0; i < numPorts; i++) {
-//      if (teensySendState[i]!=2) {
-//        allSent=false;
-//      }
-//      if (teensySendState[i]!=0) {
-//        allSynced=false;
-//      }
-//    }
-
-//    if (allSent) {
-//      for (int i=0; i < numPorts; i++) {
-//        teensySendState[i] = 3;
-//      }
-
-//      while (!writeBuffersFilled) {
-//        delay(1);
-//      }
-
-//      ArrayList<ledBuffer> switchBuffers = writeBuffers;
-//      writeBuffers = sendBuffers;
-//      sendBuffers = switchBuffers;
-//      writeBuffersFilled = false;
-//    }
-//    if (allSynced) {
-//      long currTime = System.nanoTime();
-//      frameTime = currTime - lastFrame;
-//      lastFrame = currTime;
-//      frameTimes.append(frameTime/1000000.);
-
-//      for (int i=0; i < numPorts; i++) {
-//        teensySendState[i] = 1;
-//      }
-//    }
-//  }
-//}
 
 
 void mesh2data(byte[] data, int offset, int id) {
@@ -184,7 +103,6 @@ void mesh2data(byte[] data, int offset, int id) {
         pixel[j] = get(l.posX, l.posY);
         pixel[j] = colorWiring(pixel[j]);
 
-        //if (i == 0 && j == 0) println(red(pixel[j]));
         //This was the last LED, switch to next segment
         if (++currentLED[j] == currentS[j].leds.length) {
           currentS[j] = currentS[j].next;
