@@ -13,7 +13,6 @@ void setup() {
   setupDrops();
   setupBlobs();
   setupSound();
-  setupFaces();
   createMeshMask();
 
   colorMode(HSB);
