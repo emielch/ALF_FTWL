@@ -1,4 +1,4 @@
-#define TEENSY_ID      10
+#define TEENSY_ID      7
 
 #include <OctoWS2811.h>
 
@@ -19,7 +19,7 @@ const int ledsPerStrip = 229;
 const int ledsPerStrip = 243;
 
 // 10 is the faces teensy
-#elif TEENSY_ID == 10
+#elif TEENSY_ID == 7
 const int ledsPerStrip = 125;
 #define HALL_AM 3
 byte hallPins[HALL_AM] = {0, 1, 23};
@@ -43,7 +43,7 @@ unsigned int screenSaverDelay = 5000;
 elapsedMillis sinceNewFrame = screenSaverDelay;
 
 void setup() {
-#if TEENSY_ID == 10
+#if TEENSY_ID == 7
   for (int i = 0; i < HALL_AM; i++) {
     pinMode(hallPins[i], INPUT_PULLUP);
   }
@@ -72,7 +72,7 @@ void loop() {
     rainbow(10, 2500);
   }
 
-#if TEENSY_ID == 10
+#if TEENSY_ID == 7
   for (int i = 0; i < HALL_AM; i++) {
     boolean val = digitalRead(hallPins[i]);
     if(val!=hallStates[i]){

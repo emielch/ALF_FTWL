@@ -11,7 +11,7 @@ Serial[] touchSerial = new Serial[maxPorts];     // each port's actual Serial po
 int[] teensyTouchID = new int[maxPorts];
 String[] touchBuffer = new String[maxPorts];
 
-Serial faceSerial;
+Serial faceSerial = null;
 
 
 void serialSetup() {
@@ -72,7 +72,7 @@ void serialConfigure(String portName) {
 
 
   if (ID<100) {
-    if(ID==10){
+    if(ID==7){
       faceSerial = newSerial;
       println("FACE_TEENSY found!");
     }

@@ -19,6 +19,13 @@ void serialUpdate() {
       } else if (inChar!='\r') touchBuffer[i]+=inChar;
     }
   }
+  
+  if(faceSerial!=null){
+    while (faceSerial.available() > 0) {
+      char inChar = faceSerial.readChar();
+      parseHall(inChar);
+    }
+  }
 }
 
 
