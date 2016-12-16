@@ -35,7 +35,7 @@ void serialConfigure(String portName) {
     return;
   }
   try {
-    newSerial= new Serial(this, portName);
+    newSerial = new Serial(this, portName);
     if (newSerial == null) throw new NullPointerException();
     newSerial.write('?');
   } 
@@ -44,7 +44,7 @@ void serialConfigure(String portName) {
     return;
   }
   delay(50);
-  String line = ledSerial[numPorts].readStringUntil(10);
+  String line = newSerial.readStringUntil(10);
   if (line == null) {
     println("Serial port " + portName + " is not responding.");
     println("Is it really a Teensy 3.0 running VideoDisplay?");
