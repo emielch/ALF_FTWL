@@ -11,6 +11,8 @@ Serial[] touchSerial = new Serial[maxPorts];     // each port's actual Serial po
 int[] teensyTouchID = new int[maxPorts];
 String[] touchBuffer = new String[maxPorts];
 
+Serial faceSerial;
+
 
 void serialSetup() {
   String[] list = Serial.list();
@@ -70,6 +72,11 @@ void serialConfigure(String portName) {
 
 
   if (ID<100) {
+    if(ID==10){
+      faceSerial = newSerial;
+      println("FACE_TEENSY found!");
+    }
+    
     ledSerial[numPorts] = newSerial;
     teensyID[numPorts] = ID;
     maxLeds[numPorts] = Integer.parseInt(param[1]);
@@ -82,7 +89,6 @@ void serialConfigure(String portName) {
     println(numPorts+1, "teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
     numPorts++;
   } else {
-    newSerial.setDTR(true);
     touchSerial[numTouchPorts] = newSerial;
     teensyTouchID[numTouchPorts] = ID;
     touchBuffer[numTouchPorts] = "";
