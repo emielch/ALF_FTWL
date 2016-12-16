@@ -6,7 +6,7 @@ int channel = 0;
 void setup() {
   size(1266, 800, P2D);
   background(0);
-  frameRate(1000);
+  frameRate(60);
   serialSetup();
   senderSetup();
   setupPulses();
@@ -36,6 +36,10 @@ void draw() {
 
   if (mousePressed) {
     sendLove(mouseX, mouseY);
+  }
+  
+  for(float pos : touchPos){
+    sendLove((int)pos, 400);
   }
 
   drawBlobs();
