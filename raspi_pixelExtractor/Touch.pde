@@ -9,6 +9,7 @@ void parseTouchString(String s, int id) {
   for (int i=0; i<touchLocs.length; i++) {
     if (touchLocs[i]!=""){
       float pos = Float.parseFloat(touchLocs[i]);
+      if(id==100) pos = 1-pos;
       pos = 712+pos*touchBarWidth;
       if(id==101) pos+=touchBarWidth;
       touchPos.append(pos);
