@@ -41,7 +41,7 @@ void serialConfigure(String portName) {
     newSerial = new Serial(this, portName);
     if (newSerial == null) throw new NullPointerException();
     newSerial.write('?');
-    delay(150);
+    delay(50);
     newSerial.readString();
 
     newSerial.write('?');
@@ -52,7 +52,7 @@ void serialConfigure(String portName) {
   }
   int startWait = millis();
   while (newSerial.available() == 0) {
-    if (millis()>startWait+1000) break;
+    if (millis()>startWait+200) break;
   }
   String line = newSerial.readStringUntil(10);
   if (line == null) {
