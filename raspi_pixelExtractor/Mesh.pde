@@ -1,11 +1,12 @@
 ArrayList<Segment> segments = new ArrayList<Segment>();
 
-static final int TEENSY_NUMBER = 7;
+static final int TEENSY_NUMBER = 8;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
 
 PGraphics mask;
 int faceX[] = {76, 266, 456};
 int faceY = 600;
+int faceLEDN = 125;
 
 void importMesh(String filename){
   
@@ -25,6 +26,12 @@ void importMesh(String filename){
     teensies[i] = new Teensy(ts.getJSONObject(i));
   } 
   
+  //Add faces
+  for(int i = 0; i < 3; i++){
+    Segment s = new Segment(572+50*i, 25, 572+50*i, 25, faceLEDN);
+    segments.add(s);
+    teensies[7].channel[i] = s;
+  }
 }
 
 void createMeshMask(){  
@@ -136,6 +143,25 @@ class Segment{
   Segment(JSONObject json){
     fromJson(json);
     drops = new ArrayList<Drop>();
+  }
+  
+  Segment(int startX, int startY, int endX, int endY, int ln){
+    this.startX = startX;
+    this.startY = startY;
+    this.endX = endX;
+    this.endY = endY;
+    
+    updateLEDs(ln);    
+  }
+  
+  void updateLEDs(int ledn){
+    ledN = ledn;
+    leds = new LED[ledN];
+    for(int i = 0; i < ledN; i++){
+      int x = (int)lerp(startX, endX, 1.0/(2*ledN)+(float)i/ledN);
+      int y = (int)lerp(startY, endY, 1.0/(2*ledN)+(float)i/ledN);
+      leds[i] = new LED(x, y);
+    }
   }
   
   float getDistance(float x, float y){
