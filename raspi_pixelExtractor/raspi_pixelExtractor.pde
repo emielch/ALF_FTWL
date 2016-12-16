@@ -13,37 +13,47 @@ void setup() {
   setupDrops();
   setupBlobs();
   createMeshMask();
-  
+
   colorMode(HSB);
-  for(int i = 0; i < 20; i++){
-    blobs.add(new Blob(width/2, height/2, (int)random(500,1000), (int)random(105, 170), (int)random(200, 255), (int)random(40,60), random(20, 40), width/2, 0.01));
+  for (int i = 0; i < 20; i++) {
+    blobs.add(new Blob(width/2, height/2, (int)random(500, 1000), (int)random(105, 170), (int)random(200, 255), (int)random(40, 60), random(20, 40), width/2, 0.01));
   }
+  
+  thread("serialHeartbeat");
 }
 
 
 void draw() {
-    frameTime = millis()-frameStart;
-    frameStart = millis();
-    
-    println(frameRate);
-    background(0);
+  serialUpdate();
   
-    if (mousePressed) {
-      sendLove(mouseX,mouseY);
-    }
-    
-    drawBlobs();
-    drawDrops();
-    drawPulses();
-    
-    //if(keyPressed){ 
-    //  testSegmentCounts(5);
-    //  testChannelLocations(5, channel++);
-    //  if(channel > 7) channel = 0;
-    //  delay(500);
-    //}
-    
-    maskMesh();
-  
-    sendFrame();
+  frameTime = millis()-frameStart;
+  frameStart = millis();
+
+  //println(frameRate);
+  background(0);
+
+  if (mousePressed) {
+    sendLove(mouseX, mouseY);
+  }
+
+  drawBlobs();
+  drawDrops();
+  drawPulses();
+
+  //if(keyPressed){ 
+  //  testSegmentCounts(5);
+  //  testChannelLocations(5, channel++);
+  //  if(channel > 7) channel = 0;
+  //  delay(500);
+  //}
+
+  maskMesh();
+
+  sendFrame();
+}
+
+
+void exit() {
+  closeConnections();
+  super.exit();
 }

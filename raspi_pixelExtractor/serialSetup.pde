@@ -9,6 +9,7 @@ int[] maxLeds = new int[maxPorts];
 
 Serial[] touchSerial = new Serial[maxPorts];     // each port's actual Serial port
 int[] teensyTouchID = new int[maxPorts];
+String[] touchBuffer = new String[maxPorts];
 
 
 void serialSetup() {
@@ -29,7 +30,7 @@ void serialSetup() {
 
 // ask a Teensy board for its LED configuration, and set up the info for it.
 void serialConfigure(String portName) {
-  Serial newSerial;
+  Serial newSerial = null;
   if (numPorts+numTouchPorts >= maxPorts) {
     println("too many serial ports, please increase maxPorts");
     return;
@@ -38,12 +39,19 @@ void serialConfigure(String portName) {
     newSerial = new Serial(this, portName);
     if (newSerial == null) throw new NullPointerException();
     newSerial.write('?');
+    delay(150);
+    newSerial.readString();
+
+    newSerial.write('?');
   } 
   catch (Throwable e) {
     println("Serial port " + portName + " does not exist or is non-functional");
     return;
   }
-  delay(50);
+  int startWait = millis();
+  while (newSerial.available() == 0) {
+    if (millis()>startWait+1000) break;
+  }
   String line = newSerial.readStringUntil(10);
   if (line == null) {
     println("Serial port " + portName + " is not responding.");
@@ -52,6 +60,7 @@ void serialConfigure(String portName) {
   }
   String param[] = line.split(",");
   if (param.length != 3) {
+    println(line);
     println("Error: port " + portName + " did not respond to LED config query");
     return;
   }
@@ -73,8 +82,11 @@ void serialConfigure(String portName) {
     println(numPorts+1, "teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
     numPorts++;
   } else {
+    newSerial.setDTR(true);
     touchSerial[numTouchPorts] = newSerial;
-    println(numTouchPorts+1, "TOUCH_Teensy: " + portName + " added, id: " + teensyID[numPorts]   );
+    teensyTouchID[numTouchPorts] = ID;
+    touchBuffer[numTouchPorts] = "";
+    println(numTouchPorts+1, "TOUCH_Teensy: " + portName + " added, id: " + teensyTouchID[numTouchPorts]   );
     numTouchPorts++;
   }
 }
@@ -83,4 +95,8 @@ void closeConnections() {
   for (int i=0; i<numPorts; i++) {
     ledSerial[i].stop();
   }
+  for (int i=0; i<numTouchPorts; i++) {
+    touchSerial[i].stop();   // send heartbeat
+  }
+  println("closed connections");
 }

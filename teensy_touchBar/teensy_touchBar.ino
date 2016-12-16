@@ -26,7 +26,12 @@ int samples = 50;
 elapsedMillis sinceCalibCount = 0;
 unsigned int calibDelay = 2000;
 
+boolean sending = false;
+elapsedMillis sinceSerialReceive = 0;
+unsigned int stopSendDelay = 2000;
+
 void setup() {
+  pinMode(13, OUTPUT);
   setupLeds();
 
   for (int i = 0; i < TOUCH_AM; i++) {
@@ -41,15 +46,20 @@ void loop() {
   readTouchPins();
   calcTouchPos();
 
-  printTouchVals();
+  if (sinceSerialReceive < stopSendDelay) printTouchVals();
 
   updateLeds();
 }
 
 void checkSerial() {
+  if (sinceSerialReceive < stopSendDelay) digitalWrite(13, HIGH);
+  else digitalWrite(13, LOW);
+
   if (Serial.available() > 0) {
     int startChar = Serial.read();
-    if (startChar == '?') {
+    if (startChar == '.') {
+      sinceSerialReceive = 0;
+    } else if (startChar == '?') {
       // when the video application asks, give it all our info
       // for easy and automatic configuration
       Serial.print(TOUCHBAR_ID);
@@ -58,7 +68,6 @@ void checkSerial() {
       Serial.write(',');
       Serial.print(0);
       Serial.println();
-
     } else if (startChar >= 0) {
       // discard unknown characters
     }
@@ -100,7 +109,7 @@ void readTouchPins() {
 void calcTouchPos() {
   for (int i = 0; i < TOUCH_AM; i++) {
     if (touchCalibVals[i] > 0.3) {
-      touchPos[i] = i/float(TOUCH_AM-1);
+      touchPos[i] = i / float(TOUCH_AM - 1);
     } else {
       touchPos[i] = -1;
     }
@@ -117,11 +126,11 @@ void printTouchVals() {
   }
   Serial.println();
 
-//    for (int i = 0; i < TOUCH_AM; i++) {
-//      Serial.print(touchCalibVals[i]);
-//      Serial.print('\t');
-//    }
-//    Serial.println();
+  //    for (int i = 0; i < TOUCH_AM; i++) {
+  //      Serial.print(touchCalibVals[i]);
+  //      Serial.print('\t');
+  //    }
+  //    Serial.println();
 }
 
 
