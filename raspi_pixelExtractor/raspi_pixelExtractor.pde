@@ -12,6 +12,8 @@ void setup() {
   setupPulses();
   setupDrops();
   setupBlobs();
+  setupSound();
+  setupFaces();
   createMeshMask();
 
   colorMode(HSB);
@@ -48,6 +50,8 @@ void draw() {
   //}
 
   maskMesh();
+  
+  drawFaces();
 
   sendFrame();
 }
