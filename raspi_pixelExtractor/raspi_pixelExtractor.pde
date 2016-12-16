@@ -37,6 +37,11 @@ void draw() {
     sendLove(mouseX, mouseY);
   }
   
+  if(keyPressed){
+    if(key == 'd') faceMove(0,true);
+    if(key == 'u') faceMove(0,false);
+  }
+  
   for(float pos : touchPos){
     sendLove((int)pos, 400);
   }

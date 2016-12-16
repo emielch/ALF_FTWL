@@ -2,6 +2,7 @@ PImage blobSprite;
 ArrayList<Blob> blobs;
 ArrayList<Blob> removeBlobs;
 ArrayList<Blob> addBlobs;
+float chargeAmount = 0.5;
 
 void setupBlobs(){
   blobSprite = loadImage("BlobSprite.png");
@@ -82,6 +83,13 @@ class Blob{
         if(street){ 
           addBlobs.add(new Blob(532-(x-712), 0, tx, ty, size, hue, sat, bri, speed, randomMovement, pulseChance, false));
         }
+
+        for(int i = 0; i < 3; i++){
+          if(abs(x-faceX[i]) < 2){ 
+            if(faceCharge[i] < maxCharge) faceCharge[i] += chargeAmount;
+          }
+        }
+          
         removeBlobs.add(this);
         return;
       }
