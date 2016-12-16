@@ -43,7 +43,6 @@ class Blob{
     ry = random(2*PI);
     this.x = x;
     this.y = y;
-    this.c = c;
     this.speed = speed;
     this.size = size;
     setTarget(tx,ty);
@@ -64,7 +63,6 @@ class Blob{
     ty = -1;
     this.x = x;
     this.y = y;
-    this.c = c;
     this.speed = speed;
     this.size = size;
     this.randomMovement = randomMovement;
@@ -82,7 +80,6 @@ class Blob{
       float relPos = (float)(millis()-startMove)/moveTime;
       if(relPos > 1){ 
         if(street){ 
-          int fi = floor(random(3));
           addBlobs.add(new Blob(532-(x-712), 0, tx, ty, size, hue, sat, bri, speed, randomMovement, pulseChance, false));
         }
         removeBlobs.add(this);
@@ -103,7 +100,11 @@ class Blob{
       by = randomMovement*sin(ry+2*PI*millis()/1000*(speed/(randomMovement*10)));
     }
     if(dropChance > 0){
-      if(random(1) < dropChance) drops.add(new Drop((int)(x+bx+random(-size/3,size/3)), (int)(y+by+random(-size/3,size/3)), random(1,20), color(hue, 255, 200)));
+      if(random(1) < dropChance){
+        int dx = (int)(x+bx+random(-size/4,size/4));
+        int dy = (int)(y+by+random(-size/4,size/4));
+        if(dx > 0 && dx < width && dy > 0 && dy < width) drops.add(new Drop(dx, dy, random(1,20), color(hue, 255, 200)));
+      }
     }
     if(pulseChance > 0){
       int dir;
