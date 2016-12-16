@@ -40,8 +40,8 @@ void serialConfigure(String portName) {
   try {
     newSerial = new Serial(this, portName);
     if (newSerial == null) throw new NullPointerException();
-    newSerial.write('?');
-    delay(50);
+    newSerial.write('i');
+    delay(150);
     newSerial.readString();
 
     newSerial.write('?');
