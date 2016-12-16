@@ -1,6 +1,6 @@
 import processing.serial.*;
 
-CountDownLatch serialHeartbeatLatch;
+CountDownLatch serialHeartbeatLatch = new CountDownLatch(1);
 
 long lastHB = 0;
 int HBDelay = 1000;

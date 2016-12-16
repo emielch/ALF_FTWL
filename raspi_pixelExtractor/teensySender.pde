@@ -122,8 +122,6 @@ void mesh2data(byte[] data, int offset, int id) {
   }
 }
 
-
-
 // translate the 24 bit color from RGB to the actual
 // order used by the LED wiring.  GRB is the most common.
 int colorWiring(int c) {
