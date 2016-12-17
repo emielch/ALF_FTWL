@@ -45,5 +45,8 @@ void serialHeartbeat() {
     for (int i=0; i<numTouchPorts; i++) {
       touchSerial[i].write('.');   // send heartbeat
     }
+    if (faceSerial!=null) {
+      faceSerial.write('.');
+    }
   }
 }

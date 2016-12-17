@@ -24,6 +24,8 @@ const int ledsPerStrip = 125;
 #define HALL_AM 3
 byte hallPins[HALL_AM] = {0, 1, 23};
 boolean hallStates[HALL_AM] = {false, false, false};
+elapsedMillis sinceSerialReceive = 0;
+unsigned int stopSendDelay = 2000;
 #endif
 
 DMAMEM int displayMemory[ledsPerStrip * 6];
@@ -73,11 +75,12 @@ void loop() {
   }
 
 #if TEENSY_ID == 7
+
   for (int i = 0; i < HALL_AM; i++) {
     boolean val = digitalRead(hallPins[i]);
-    if(val!=hallStates[i]){
+    if (val != hallStates[i]) {
       hallStates[i] = val;
-      sendHallState(i,val);
+      if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) sendHallState(i, val);
     }
   }
 #endif
@@ -96,7 +99,11 @@ void loop() {
   //         with a comma delimited list of information.
   //
   int startChar = Serial.read();
-
+#if TEENSY_ID == 7
+  if (startChar == '.') {
+    sinceSerialReceive = 0;
+  }
+#endif
   if (startChar == '%') {
     // receive a frame - set boolean newData to true foshowing when
     // a frame sync arrives

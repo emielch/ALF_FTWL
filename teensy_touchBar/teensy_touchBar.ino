@@ -26,7 +26,6 @@ int samples = 50;
 elapsedMillis sinceCalibCount = 0;
 unsigned int calibDelay = 2000;
 
-boolean sending = false;
 elapsedMillis sinceSerialReceive = 0;
 unsigned int stopSendDelay = 2000;
 
@@ -46,13 +45,13 @@ void loop() {
   readTouchPins();
   calcTouchPos();
 
-  if (sinceSerialReceive < stopSendDelay) printTouchVals();
+  if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) printTouchVals();
 
   updateLeds();
 }
 
 void checkSerial() {
-  if (sinceSerialReceive < stopSendDelay) digitalWrite(13, HIGH);
+  if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) digitalWrite(13, HIGH);
   else digitalWrite(13, LOW);
 
   if (Serial.available() > 0) {
