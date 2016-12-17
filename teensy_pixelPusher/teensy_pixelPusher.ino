@@ -26,6 +26,8 @@ byte hallPins[HALL_AM] = {0, 1, 23};
 boolean hallStates[HALL_AM] = {false, false, false};
 elapsedMillis sinceSerialReceive = 0;
 unsigned int stopSendDelay = 2000;
+unsigned long lastRisingHall[HALL_AM] = {0, 0, 0};
+unsigned int hallDelay = 500;
 #endif
 
 DMAMEM int displayMemory[ledsPerStrip * 6];
@@ -79,8 +81,10 @@ void loop() {
   for (int i = 0; i < HALL_AM; i++) {
     boolean val = digitalRead(hallPins[i]);
     if (val != hallStates[i]) {
-      hallStates[i] = val;
-      if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) sendHallState(i, val);
+      if (val == false && millis() > lastRisingHall + hallDelay) {
+        hallStates[i] = val;
+        /*if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay)*/ sendHallState(i, val);
+      }
     }
   }
 #endif
