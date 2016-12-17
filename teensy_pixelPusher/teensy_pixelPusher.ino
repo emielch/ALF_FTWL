@@ -80,6 +80,7 @@ void loop() {
 
   for (int i = 0; i < HALL_AM; i++) {
     boolean val = digitalRead(hallPins[i]);
+    if(val==true) lastRisingHall = millis();
     if (val != hallStates[i]) {
       if (val == false && millis() > lastRisingHall + hallDelay) {
         hallStates[i] = val;
