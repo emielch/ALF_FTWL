@@ -52,7 +52,7 @@ void serialConfigure(String portName) {
   }
   int startWait = millis();
   while (newSerial.available() == 0) {
-    if (millis()>startWait+200) break;
+    if (millis()>startWait+500) break;
   }
   String line = newSerial.readStringUntil(10);
   if (line == null) {

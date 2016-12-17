@@ -7,8 +7,6 @@ void setup() {
   size(1266, 800, P2D);
   background(0);
   frameRate(60);
-  serialSetup();
-  senderSetup();
   setupPulses();
   setupDrops();
   setupBlobs();

@@ -5,8 +5,17 @@ CountDownLatch serialHeartbeatLatch = new CountDownLatch(1);
 long lastHB = 0;
 int HBDelay = 1000;
 
+boolean serialStarted = false;
+
 void serialUpdate() {
-  if(millis()>lastHB+HBDelay){
+  if (!serialStarted) {
+    serialSetup();
+    senderSetup();
+    serialStarted = true;
+  }
+
+
+  if (millis()>lastHB+HBDelay) {
     serialHeartbeatLatch.countDown();
     lastHB = millis();
   }
@@ -14,13 +23,13 @@ void serialUpdate() {
     while (touchSerial[i].available() > 0) {
       char inChar = touchSerial[i].readChar();
       if (inChar=='\n') {
-        parseTouchString(touchBuffer[i],teensyTouchID[i]);
+        parseTouchString(touchBuffer[i], teensyTouchID[i]);
         touchBuffer[i] = "";
       } else if (inChar!='\r') touchBuffer[i]+=inChar;
     }
   }
-  
-  if(faceSerial!=null){
+
+  if (faceSerial!=null) {
     while (faceSerial.available() > 0) {
       char inChar = faceSerial.readChar();
       parseHall(inChar);
