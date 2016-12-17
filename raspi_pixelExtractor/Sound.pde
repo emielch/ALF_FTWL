@@ -7,6 +7,7 @@ int voiceN = 8;
 int touchN = 15;
 AudioSample voiceSample[] = new AudioSample[voiceN];
 AudioSample touchSample[] = new AudioSample[touchN];
+int touchTriggered[] = new int[touchN];
 float voiceGain = 0; //in dB, minus for attennuation
 float touchGain = 0;
 
