@@ -55,7 +55,7 @@ void draw() {
   //  delay(500);
   //}
 
-  maskMesh();
+  //maskMesh();
   
   drawFaces();
 
