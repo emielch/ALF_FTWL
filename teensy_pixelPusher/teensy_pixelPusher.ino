@@ -80,11 +80,11 @@ void loop() {
 
   for (int i = 0; i < HALL_AM; i++) {
     boolean val = digitalRead(hallPins[i]);
-    if(val==true) lastRisingHall = millis();
+    if(val==true) lastRisingHall[i] = millis();
     if (val != hallStates[i]) {
-      if (val == false && millis() > lastRisingHall + hallDelay) {
+      if (val==true || (val == false && millis() > lastRisingHall[i] + hallDelay)) {
         hallStates[i] = val;
-        /*if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay)*/ sendHallState(i, val);
+        if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) sendHallState(i, val);
       }
     }
   }
