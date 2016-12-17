@@ -2,7 +2,7 @@ PImage blobSprite;
 ArrayList<Blob> blobs;
 ArrayList<Blob> removeBlobs;
 ArrayList<Blob> addBlobs;
-float chargeAmount = 0.5;
+float chargeAmount = 0.9;
 
 void setupBlobs(){
   blobSprite = loadImage("BlobSprite.png");
@@ -118,7 +118,10 @@ class Blob{
       int dir;
       if(random(1) < 0.5) dir = 1;
       else dir = -1;
-      if(random(1) < pulseChance) firePulse((int)(x+bx), (int)(y+by), tx, ty, dir, 5, color(0, 0, 255), floor(random(50,200)), floor(random(200,1500)));
+      if(random(1) < pulseChance){ 
+        if(!street) firePulse((int)(x+bx), (int)(y+by), tx, ty, dir, 5, color(0, 0, 255), floor(random(50,200)), floor(random(200,1500)));
+        else firePulse((int)(x+bx), (int)(y+by), (int)x, 0, dir, 5, color(0, 0, 255), floor(random(50,200)), floor(random(200,1500)));
+      }
     }
   }
   

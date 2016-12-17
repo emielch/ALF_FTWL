@@ -1,5 +1,7 @@
 ArrayList<Segment> segments = new ArrayList<Segment>();
 
+int disabledSegments[] = {78,80,54,55,53,77, 52};
+
 static final int TEENSY_NUMBER = 8;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
 
@@ -32,6 +34,11 @@ void importMesh(String filename){
     segments.add(s);
     teensies[7].channel[i] = s;
   }
+  
+  //Disable certain segments
+  for(int i = 0; i<disabledSegments.length; i++){
+    segments.get(disabledSegments[i]).disabled = true;
+  }
 }
 
 void createMeshMask(){  
@@ -47,7 +54,7 @@ void createMeshMask(){
   mask.stroke(0);
   mask.strokeWeight(2);
   for(Segment s : segments){
-    mask.line(s.startX, s.startY, s.endX, s.endY);
+    if(!s.disabled) mask.line(s.startX, s.startY, s.endX, s.endY);
   }
   
   mask.endDraw(); 
@@ -125,6 +132,7 @@ class Teensy{
 
 class Segment{
   int startX, startY, endX, endY, ledN;
+  boolean disabled = false;
   
   ArrayList<Drop> drops;
   
