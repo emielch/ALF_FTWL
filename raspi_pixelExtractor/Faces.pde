@@ -6,7 +6,8 @@ int startAnimation[] = {0,0,0};
 int minMoveTime = 2000;
 int minUpTime = 2000;
 int minCharge = 0;
-int maxCharge = 128;
+int maxCharge = 200;
+int maxBrightness = 200;
 float faceCharge[] = {minCharge,minCharge,minCharge};
 float startCharge[] = new float[3];
 boolean emptyFace[] = {false,false,false};
@@ -18,7 +19,7 @@ void drawFaces(){
   colorMode(HSB);
   for(int i = 0; i < 3; i++){
     if(faceDown[i] && millis()-startAnimation[i] > minMoveTime){
-      faceCharge[i] = (int)lerp(startCharge[i], 255, (float)(millis()-startAnimation[i]-2000) / (float)moveTime[i]);
+      faceCharge[i] = (int)lerp(startCharge[i], maxBrightness, (float)(millis()-startAnimation[i]-2000) / (float)moveTime[i]);
       if(!soundTriggered){
         voiceSample[floor(random(voiceN))].trigger();
         soundTriggered = true;

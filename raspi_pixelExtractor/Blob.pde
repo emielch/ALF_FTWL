@@ -29,10 +29,12 @@ void sendLove(int x, int y){
   else fi = 2;
   blobs.add(new Blob(x,y,faceX[fi], faceY, (int)random(50,100), (int)random(200,255), (int)random(200,255), 200, 100, random(10,30),0.2,true));
   
-  int soundi = floor((x-712)/(540/15));
-  if(millis() > touchTriggered[soundi]+3000){
-    touchSample[soundi].trigger();
-    touchTriggered[soundi] = millis();
+  if(x > 712){
+    int soundi = floor((532-(x-712))/(540/15));
+    if(millis() > touchTriggered[soundi]+3000){
+      touchSample[soundi].trigger();
+      touchTriggered[soundi] = millis();
+    }
   }
 }
 

@@ -9,7 +9,7 @@ AudioSample voiceSample[] = new AudioSample[voiceN];
 AudioSample touchSample[] = new AudioSample[touchN];
 int touchTriggered[] = new int[touchN];
 float voiceGain = 0; //in dB, minus for attennuation
-float touchGain = 0;
+float touchGain = 120;
 
 void setupSound(){
   minim = new Minim(this);
