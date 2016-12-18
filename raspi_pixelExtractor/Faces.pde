@@ -8,23 +8,26 @@ int minUpTime = 2000;
 int minCharge = 0;
 int maxCharge = 200;
 int maxBrightness = 200;
+int lastEmpty[] = {0, 0, 0};
+int emptyWaitTime = 20000; //Max time to wait for the hand to empty itself
 float faceCharge[] = {minCharge,minCharge,minCharge};
 float startCharge[] = new float[3];
 boolean emptyFace[] = {false,false,false};
 boolean faceDown[] = {false, false, false};
-boolean soundTriggered;
-int emptyTime = 1500;
+boolean soundTriggered[] = {false,false,false};
+int emptyTime = 2000;
 
 void drawFaces(){  
   colorMode(HSB);
   for(int i = 0; i < 3; i++){
+    if(millis()-lastEmpty[i] > emptyWaitTime) faceMove(i, false);
     if(faceDown[i] && millis()-startAnimation[i] > minMoveTime){
-      faceCharge[i] = (int)lerp(startCharge[i], maxBrightness, (float)(millis()-startAnimation[i]-2000) / (float)moveTime[i]);
-      if(!soundTriggered){
+      if(!soundTriggered[i]){
         voiceSample[floor(random(voiceN))].trigger();
-        soundTriggered = true;
+        soundTriggered[i] = true;
+        startCharge[i] = faceCharge[i];
       }
-      //if(i==0) println((float)(millis()-startAnimation[i]+2000) / (float)moveTime[i]);
+      faceCharge[i] = (int)lerp(startCharge[i], maxBrightness, (float)(millis()-startAnimation[i]-2000) / (float)moveTime[i]);
     }
     else if(emptyFace[i]){
       float r = (float)(millis()-startAnimation[i]) / (float)emptyTime;
@@ -54,7 +57,6 @@ void faceMove(int faceID, boolean down){
       startAnimation[faceID] = millis();
       faceDown[faceID] = true;
       emptyFace[faceID] = false;
-      startCharge[faceID] = faceCharge[faceID];
     }
   }
   else{
@@ -64,7 +66,8 @@ void faceMove(int faceID, boolean down){
       emptyFace[faceID] = true;
       faceDown[faceID] = false;
       startCharge[faceID] = faceCharge[faceID];
-      soundTriggered = false;
+      lastEmpty[faceID] = millis();
+      soundTriggered[faceID] = false;
     }
   }
 }
