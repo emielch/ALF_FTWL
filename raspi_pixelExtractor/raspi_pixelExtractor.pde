@@ -14,11 +14,12 @@ void setup() {
   createMeshMask();
 
   colorMode(HSB);
-  for (int i = 0; i < 20; i++) {
-    blobs.add(new Blob(width/2, height/2, (int)random(500, 1000), (int)random(105, 170), (int)random(200, 255), (int)random(40, 60), random(20, 40), width/2, 0.01));
+  for (int i = 0; i < 50; i++) {
+    blobs.add(new Blob(width/2, height/2, (int)random(500, 1000), (int)random(105, 170), (int)random(200, 255), (int)random(40, 60), random(70, 200), width/2, 0.02));
   }
   
   thread("serialHeartbeat");
+  blendMode(ADD);
 }
 
 
