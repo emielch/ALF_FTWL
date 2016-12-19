@@ -7,6 +7,7 @@ void setup() {
   size(1266, 800, P2D);
   background(0);
   frameRate(60);
+  importMesh("mesh.json");
   setupPulses();
   setupDrops();
   setupBlobs();
@@ -55,9 +56,9 @@ void draw() {
   //  delay(500);
   //}
 
-  //maskMesh();
   
   blendMode(NORMAL);
+  maskMesh();
   drawFaces();
   blendMode(ADD);
   sendFrame();

@@ -22,8 +22,6 @@ void senderSetup() {
  
   // start the send controller
   thread("sendController");
-
-  importMesh("mesh.json");
 }
 
 void sendFrame() {
