@@ -32,14 +32,43 @@ void serialUpdate() {
   if (faceSerial!=null) {
     while (faceSerial.available() > 0) {
       char inChar = faceSerial.readChar();
-      parseHall(inChar);
+      if (inChar=='.') lastLedHB[faceID] = millis();
+      else parseHall(inChar);
+    }
+  }
+
+  //receive heartbeats
+  for (int i=0; i < numPorts; i++) {
+    if (i==faceID) continue; // faceSerial is already checked before
+    while (ledSerial[i].available() > 0) {
+      char inChar = ledSerial[i].readChar();
+      if (inChar=='.') {
+        lastLedHB[i] = millis();
+      }
+    }
+  }
+
+  for (int i=0; i < numPorts; i++) {
+    if (millis() > lastLedHB[i]+1000 && frameCount>60) {
+      println(millis(), "\tTEENSY ", teensyID[i], " LOST");
+      try {
+        ledSerial[i].stop();
+        ledSerial[i] = new Serial(this, ledSerialPortName[i]);
+        senderThreads.get(i).newPort(ledSerial[i]);
+        if (i==faceID) faceSerial = ledSerial[i];
+        lastLedHB[i] = millis()+1000;
+      }
+      catch(Throwable e) {
+        println(millis(),"\terror reopening port");
+      }
     }
   }
 }
 
 
-void serialHeartbeat() {
+void serialHeartbeat() {  
   while (true) {
+    //send heartbeats
     serialHeartbeatLatch = new CountDownLatch(1);
     latchWait(serialHeartbeatLatch);
     for (int i=0; i<numTouchPorts; i++) {

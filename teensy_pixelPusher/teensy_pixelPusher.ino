@@ -124,6 +124,7 @@ void loop() {
       switchLed();
       newData = false;
       sinceNewFrame = 0;
+      Serial.print('.'); // confirm new frame
     }
 
   } else if (startChar == '?') {

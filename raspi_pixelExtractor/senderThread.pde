@@ -37,6 +37,10 @@ class SenderThread extends Thread {
       t.start ();
     }
   }
+  
+  void newPort(Serial _port){
+    port = _port;
+  }
 
   public void writeBuffer(byte[] data) {
     sendBuffer=data.clone();

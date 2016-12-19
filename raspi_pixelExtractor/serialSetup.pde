@@ -6,12 +6,16 @@ int maxPorts=11; // maximum number of serial ports
 Serial[] ledSerial = new Serial[maxPorts];     // each port's actual Serial port
 int[] teensyID = new int[maxPorts];
 int[] maxLeds = new int[maxPorts];
+long[] lastLedHB = new long[maxPorts];
+String[] ledSerialPortName = new String[maxPorts];
 
 Serial[] touchSerial = new Serial[maxPorts];     // each port's actual Serial port
 int[] teensyTouchID = new int[maxPorts];
+long[] lastTouchHB = new long[maxPorts];
 String[] touchBuffer = new String[maxPorts];
 
 Serial faceSerial = null;
+int faceID = -1;
 
 
 void serialSetup() {
@@ -40,7 +44,7 @@ void serialConfigure(String portName) {
   try {
     newSerial = new Serial(this, portName);
     if (newSerial == null) throw new NullPointerException();
-    newSerial.write('i');
+    newSerial.write('?');
     delay(150);
     newSerial.readString();
 
@@ -74,12 +78,14 @@ void serialConfigure(String portName) {
   if (ID<100) {
     if(ID==7){
       faceSerial = newSerial;
+      faceID = numPorts;
       println("FACE_TEENSY found!");
     }
     
     ledSerial[numPorts] = newSerial;
     teensyID[numPorts] = ID;
     maxLeds[numPorts] = Integer.parseInt(param[1]);
+    ledSerialPortName[numPorts] = portName;
 
     SenderThread newSender = new SenderThread("teensyIDSender:"+teensyID[numPorts], ledSerial[numPorts], maxLeds[numPorts]);
     senderThreads.add(newSender);
