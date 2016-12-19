@@ -19,7 +19,6 @@ void setup() {
   }
   
   thread("serialHeartbeat");
-  blendMode(ADD);
 }
 
 
@@ -58,8 +57,9 @@ void draw() {
 
   //maskMesh();
   
+  blendMode(NORMAL);
   drawFaces();
-
+  blendMode(ADD);
   sendFrame();
 }
 
