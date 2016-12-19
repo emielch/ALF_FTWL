@@ -4,16 +4,21 @@ float touchBarWidth = 532./2;
 
 
 void parseTouchString(String s, int id) {
-  touchPos.clear();
-  String touchLocs[] = s.split("\t");
-  for (int i=0; i<touchLocs.length; i++) {
-    if (touchLocs[i]!=""){
-      float pos = Float.parseFloat(touchLocs[i]);
-      if(id==100) pos = 1-pos;
-      pos = 712+pos*touchBarWidth;
-      if(id==101) pos+=touchBarWidth;
-      touchPos.append(pos);
+  try {
+    touchPos.clear();
+    String touchLocs[] = s.split("\t");
+    for (int i=0; i<touchLocs.length; i++) {
+      if (touchLocs[i]!="") {
+        float pos = Float.parseFloat(touchLocs[i]);
+        if (id==100) pos = 1-pos;
+        pos = 712+pos*touchBarWidth;
+        if (id==101) pos+=touchBarWidth;
+        touchPos.append(pos);
+      }
     }
+  }
+  catch(Exception e) {
+    println("error parsing touch string");
   }
 }
 
@@ -23,6 +28,6 @@ void drawTouch() {
     float pos = touchPos.get(i);
     ellipseMode(CENTER);  // Set ellipseMode to CENTER
     fill(255);  // Set fill to gray
-    ellipse(pos, 500, 30, 30); 
+    ellipse(pos, 500, 30, 30);
   }
 }
