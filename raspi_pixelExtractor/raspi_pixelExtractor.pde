@@ -58,7 +58,7 @@ void draw() {
 
   
   blendMode(NORMAL);
-  maskMesh();
+  //maskMesh();
   drawFaces();
   blendMode(ADD);
   sendFrame();
