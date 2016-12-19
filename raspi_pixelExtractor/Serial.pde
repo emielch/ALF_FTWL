@@ -22,6 +22,7 @@ void serialUpdate() {
   for (int i=0; i<numTouchPorts; i++) {
     while (touchSerial[i].available() > 0) {
       char inChar = touchSerial[i].readChar();
+      lastTouchHB[i] = millis();
       if (inChar=='\n') {
         parseTouchString(touchBuffer[i], teensyTouchID[i]);
         touchBuffer[i] = "";
@@ -32,8 +33,8 @@ void serialUpdate() {
   if (faceSerial!=null) {
     while (faceSerial.available() > 0) {
       char inChar = faceSerial.readChar();
-      if (inChar=='.') lastLedHB[faceID] = millis();
-      else parseHall(inChar);
+      lastLedHB[faceID] = millis();
+      if (inChar!='.') parseHall(inChar);
     }
   }
 
@@ -42,9 +43,7 @@ void serialUpdate() {
     if (i==faceID) continue; // faceSerial is already checked before
     while (ledSerial[i].available() > 0) {
       char inChar = ledSerial[i].readChar();
-      if (inChar=='.') {
-        lastLedHB[i] = millis();
-      }
+      lastLedHB[i] = millis();
     }
   }
 
@@ -57,9 +56,25 @@ void serialUpdate() {
         senderThreads.get(i).newPort(ledSerial[i]);
         if (i==faceID) faceSerial = ledSerial[i];
         lastLedHB[i] = millis()+1000;
+        println(millis(), "\treconnected!");
       }
       catch(Throwable e) {
-        println(millis(),"\terror reopening port");
+        println(millis(), "\terror reopening port");
+      }
+    }
+  }
+
+  for (int i=0; i<numTouchPorts; i++) {
+    if (millis() > lastTouchHB[i]+1000 && frameCount>60) {
+      println(millis(), "\tTOUCH TEENSY ", teensyTouchID[i], " LOST");
+      try {
+        touchSerial[i].stop();
+        touchSerial[i] = new Serial(this, touchSerialPortName[i]);
+        lastTouchHB[i] = millis()+1000;
+        println(millis(), "\treconnected!");
+      }
+      catch(Throwable e) {
+        println(millis(), "\terror reopening port");
       }
     }
   }

@@ -11,7 +11,8 @@ String[] ledSerialPortName = new String[maxPorts];
 
 Serial[] touchSerial = new Serial[maxPorts];     // each port's actual Serial port
 int[] teensyTouchID = new int[maxPorts];
-long[] lastTouchHB = new long[maxPorts];
+long[] lastTouchHB = new long[maxPorts]; // last time a touch signal was received
+String[] touchSerialPortName = new String[maxPorts];
 String[] touchBuffer = new String[maxPorts];
 
 Serial faceSerial = null;
@@ -97,6 +98,7 @@ void serialConfigure(String portName) {
   } else {
     touchSerial[numTouchPorts] = newSerial;
     teensyTouchID[numTouchPorts] = ID;
+    touchSerialPortName[numTouchPorts] = portName;
     touchBuffer[numTouchPorts] = "";
     println(numTouchPorts+1, "TOUCH_Teensy: " + portName + " added, id: " + teensyTouchID[numTouchPorts]   );
     numTouchPorts++;
