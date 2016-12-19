@@ -32,7 +32,7 @@ void sendLove(int x, int y){
   if(x > 712){
     int soundi = floor((532-(x-712))/(540/15));
     soundi = constrain(soundi, 0, touchSample.length);
-    if(millis() > touchTriggered[soundi]+650){
+    if(millis() > touchTriggered[soundi]+1200){
       touchSample[soundi].trigger();
       touchTriggered[soundi] = millis();
     }
