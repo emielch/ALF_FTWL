@@ -104,7 +104,7 @@ class Drop{
     if(speed > 0){
       x += speed*currentS.ca*((float)frameTime/1000)*dir;
       y += speed*currentS.sa*((float)frameTime/1000)*dir;
-      size -= 0.1*speed*((float)frameTime/1000);
+      size -= 0.05*speed*((float)frameTime/1000);
     }
     
     //Check if we reached the end of the segment

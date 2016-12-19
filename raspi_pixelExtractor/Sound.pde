@@ -8,8 +8,8 @@ int touchN = 15;
 AudioSample voiceSample[] = new AudioSample[voiceN];
 AudioSample touchSample[] = new AudioSample[touchN];
 int touchTriggered[] = new int[touchN];
-float voiceGain = 0; //in dB, minus for attennuation
-float touchGain = 120;
+float voiceGain = 0; //in dB, minus for attennuation, range: (-80.0 to +6.0206)
+float touchGain = 6.0206;
 
 void setupSound(){
   minim = new Minim(this);
@@ -25,5 +25,4 @@ void setupSound(){
     voiceSample[i] = minim.loadSample("voices/voice"+String.format("%02d",i)+".wav");
     voiceSample[i].setGain(voiceGain);
   }
-  
 }
