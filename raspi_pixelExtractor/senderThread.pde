@@ -48,12 +48,17 @@ class SenderThread extends Thread {
     println("we are running");
     while (running) {
       if (toDo) {
-        if (task=='s') {
-          port.write(sendBuffer);
-          iamDone('s');
-        } else if (task=='d') {
-          port.write('*');
-          iamDone('d');
+        try {
+          if (task=='s') {
+            port.write(sendBuffer);
+            iamDone('s');
+          } else if (task=='d') {
+            port.write('*');
+            iamDone('d');
+          }
+        }
+        catch(Exception e) {
+          println("error on writing to serial. exiting the program?");
         }
       }
       try {
@@ -64,7 +69,7 @@ class SenderThread extends Thread {
         //println("done sleeping, lets see");
       }
       catch(InterruptedException e) {
-       // println("got interputed");
+        // println("got interputed");
         sleeping=false;
       }
     }
@@ -81,8 +86,8 @@ class SenderThread extends Thread {
 
 
   public void sendData (CountDownLatch latch) {
-    if(toDo==true){
-     println("stopping we are not yet done with the previous thing .. trying to send now"); 
+    if (toDo==true) {
+      println("stopping we are not yet done with the previous thing .. trying to send now");
     }
     task='s';
     toDo=true;
@@ -92,10 +97,10 @@ class SenderThread extends Thread {
     }
   }
   public void sendSync (CountDownLatch latch) {
-    if(toDo==true){
-     println("stopping we are not yet done with the previous thing .. trying to sync now"); 
+    if (toDo==true) {
+      println("stopping we are not yet done with the previous thing .. trying to sync now");
     }
-    
+
     task='d';
     toDo=true;
     currentLatch = latch;
