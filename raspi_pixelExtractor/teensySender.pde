@@ -90,9 +90,12 @@ void mesh2data(byte[] data, int offset, int id) {
     for (int j = 0; j < 8; j++) {
       if (currentS[j] == null) pixel[j] = 0;
       else {
-        LED l = currentS[j].leds[currentLED[j]];
-        pixel[j] = get(l.posX, l.posY);
-        pixel[j] = colorWiring(pixel[j]);
+        if(currentS[j].disabled) pixel[j] = 0;
+        else{
+          LED l = currentS[j].leds[currentLED[j]];
+          pixel[j] = get(l.posX, l.posY);
+          pixel[j] = colorWiring(pixel[j]);
+        }
 
         //This was the last LED, switch to next segment
         if (++currentLED[j] == currentS[j].leds.length) {
