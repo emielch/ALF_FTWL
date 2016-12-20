@@ -9,6 +9,7 @@ PGraphics mask;
 int faceX[] = {76, 266, 456};
 int faceY = 600;
 int faceLEDN = 125;
+boolean maskThaMesh = false;
 
 void importMesh(String filename){
   
@@ -52,7 +53,7 @@ void createMeshMask(){
   mask.beginDraw();
   mask.background(255);
   mask.stroke(0);
-  mask.strokeWeight(3.5);
+  mask.strokeWeight(2);
   for(Segment s : segments){
     if(!s.disabled) mask.line(s.startX, s.startY, s.endX, s.endY);
   }
