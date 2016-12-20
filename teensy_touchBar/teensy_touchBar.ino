@@ -107,7 +107,7 @@ void readTouchPins() {
 
 void calcTouchPos() {
   for (int i = 0; i < TOUCH_AM; i++) {
-    if (touchCalibVals[i] > 0.4) {
+    if (touchCalibVals[i] > 0.6) {
       touchPos[i] = i / float(TOUCH_AM - 1);
     } else {
       touchPos[i] = -1;
