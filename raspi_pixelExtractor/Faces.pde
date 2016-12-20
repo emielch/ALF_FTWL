@@ -14,7 +14,7 @@ float faceCharge[] = {minCharge, minCharge, minCharge};
 float startCharge[] = new float[3];
 boolean emptyFace[] = {false, false, false};
 boolean faceDown[] = {false, false, false};
-boolean soundTriggered[] = {false, false, false};
+boolean startedChargeAnimation[] = {false, false, false};
 int emptyTime = 2000;
 
 void drawFaces() {  
@@ -22,9 +22,8 @@ void drawFaces() {
   for (int i = 0; i < 3; i++) {
     if (millis() > nextMaxEmptyTime[i]) faceMove(i, false);
     if (faceDown[i] && millis()-startAnimation[i] > minMoveTime) {
-      if (!soundTriggered[i]) {
-        voiceSample[floor(random(voiceN))].trigger();
-        soundTriggered[i] = true;
+      if (!startedChargeAnimation[i]) {
+        startedChargeAnimation[i] = true;
         startCharge[i] = faceCharge[i];
       }
       faceCharge[i] = (int)lerp(startCharge[i], maxBrightness, (float)(millis()-startAnimation[i]-2000) / (float)moveTime[i]);
@@ -73,7 +72,8 @@ void faceMove(int faceID, boolean down) {
       faceDown[faceID] = false;
       startCharge[faceID] = faceCharge[faceID];
       nextMaxEmptyTime[faceID] = millis()+(int)random(0.9*emptyWaitTime, 1.1*emptyWaitTime);
-      soundTriggered[faceID] = false;
+      startedChargeAnimation[faceID] = false;
+      voiceSample[floor(random(voiceN))].trigger();
     }
   }
 }
