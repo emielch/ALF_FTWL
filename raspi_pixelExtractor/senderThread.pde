@@ -14,19 +14,14 @@ class SenderThread extends Thread {
   volatile boolean sleeping;
   volatile boolean running=true;
 
-
   CountDownLatch currentLatch;
 
-
-  //boolean sendState; // true = send data, false = send sync
 
   SenderThread( String _name, Serial _port, int _ledAm) {
     name = _name;
     port = _port;
     ledAm = _ledAm;
     sendBuffer =  new byte[(ledAm * 8 * 3) + ledDataOffset];
-    writeBuffer =  new byte[(ledAm * 8 * 3) + ledDataOffset];
-
 
     currentLatch = new CountDownLatch(1);
 
@@ -37,8 +32,8 @@ class SenderThread extends Thread {
       t.start ();
     }
   }
-  
-  void newPort(Serial _port){
+
+  public void newPort(Serial _port) {
     port = _port;
   }
 
@@ -47,9 +42,9 @@ class SenderThread extends Thread {
   }
 
 
-
   public void run() {
-    println("we are running");
+    println("SenderThread ", name, " is running");
+    
     while (running) {
       if (toDo) {
         try {
@@ -65,22 +60,20 @@ class SenderThread extends Thread {
           println("error on writing to serial. exiting the program?");
         }
       }
+      
       try {
-        //println("nothing to do sleeping now");
         sleeping=true;
         Thread.sleep(150);
         sleeping=false;
-        //println("done sleeping, lets see");
       }
       catch(InterruptedException e) {
-        // println("got interputed");
         sleeping=false;
       }
     }
   }
+
   private void iamDone(char taskIn) {
     if (taskIn!=task) {
-
       println("Something is seriously wrong the thread finished a task it was not supposed to do");
       halt();
     }
@@ -92,6 +85,7 @@ class SenderThread extends Thread {
   public void sendData (CountDownLatch latch) {
     if (toDo==true) {
       println("stopping we are not yet done with the previous thing .. trying to send now");
+      return;
     }
     task='s';
     toDo=true;
@@ -100,9 +94,12 @@ class SenderThread extends Thread {
       t.interrupt();
     }
   }
+
+
   public void sendSync (CountDownLatch latch) {
     if (toDo==true) {
       println("stopping we are not yet done with the previous thing .. trying to sync now");
+      return;
     }
 
     task='d';
@@ -112,12 +109,13 @@ class SenderThread extends Thread {
       t.interrupt();
     }
   }
+
+
   public void halt() {
     running=false;
     if (sleeping) {
       t.interrupt();
     }
-    //t.join();
     port.clear();
     port.stop();
   }

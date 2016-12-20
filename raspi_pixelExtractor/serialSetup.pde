@@ -91,7 +91,7 @@ void serialConfigure(String portName) {
     SenderThread newSender = new SenderThread("teensyIDSender:"+teensyID[numPorts], ledSerial[numPorts], maxLeds[numPorts]);
     senderThreads.add(newSender);
 
-    mapedData.add(new byte[(maxLeds[numPorts] * 8 * 3) + ledDataOffset]);
+    mappedData.add(new byte[(maxLeds[numPorts] * 8 * 3) + ledDataOffset]);
 
     println(numPorts+1, "teensy: " + portName + " added, id: " + teensyID[numPorts], ", maxLeds: ", + maxLeds[numPorts]   );
     numPorts++;

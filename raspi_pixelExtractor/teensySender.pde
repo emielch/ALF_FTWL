@@ -3,82 +3,75 @@ import processing.serial.*;
 float gamma = 1.7;
 int[] gammatable = new int[256];
 
-FloatList frameTimes = new FloatList();
-long lastPrint = 0;
-long printDelay = 1000;
-
 ArrayList<SenderThread> senderThreads = new ArrayList<SenderThread>();
-ArrayList<byte[]> mapedData = new ArrayList<byte[]>();
-int ledDataOffset = 1;
-CountDownLatch sendLatch =new CountDownLatch(0);
-CountDownLatch receiveLatch = new CountDownLatch(1);
-int threads = 0;
+ArrayList<byte[]> mappedData = new ArrayList<byte[]>();
+volatile boolean mappedDataFull = false;
+final int ledDataOffset = 1;
+CountDownLatch sendLatch = new CountDownLatch(1);
 
 
 void senderSetup() {
   for (int i=0; i < 256; i++) {
     gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
   }
- 
+
   // start the send controller
   thread("sendController");
 }
 
 void sendFrame() {
-  latchWait(sendLatch);
-  sendLatch =new CountDownLatch(1);
-  
-  for (int i=0; i < numPorts; i++) {
-    mesh2data(mapedData.get(i), ledDataOffset, i);
-    mapedData.get(i)[0] = '%';
+  if (mappedDataFull) {
+    println(millis(), " skipped a frame");
+    return;
   }
+  for (int i=0; i < numPorts; i++) {
+    mesh2data(mappedData.get(i), ledDataOffset, i);
+    mappedData.get(i)[0] = '%';
+  }
+  mappedDataFull = true;
 
-  if (receiveLatch.getCount()==1) {
-    receiveLatch.countDown();
+  if (sendLatch.getCount()==1) {
+    sendLatch.countDown();
   }
 }
+
+
+void sendController() {
+  CountDownLatch transmitLatch;
+
+  while (true) {
+    latchWait(sendLatch);   // continue when there is new data in "mappedData" to be sent
+    sendLatch = new CountDownLatch(1);
+
+    for (int i=0; i < numPorts; i++) {
+      SenderThread currSender = senderThreads.get(i);
+      currSender.writeBuffer(mappedData.get(i));
+    }
+    mappedDataFull = false;
+
+    transmitLatch = new CountDownLatch(numPorts);
+    for (int i=0; i < numPorts; i++) {
+      SenderThread currSender = senderThreads.get(i);
+      currSender.sendData(transmitLatch);
+    }
+    latchWait(transmitLatch);
+
+    transmitLatch = new CountDownLatch(numPorts);
+    for (int i=0; i < numPorts; i++) {
+      SenderThread currSender = senderThreads.get(i);
+      currSender.sendSync(transmitLatch);
+    }
+    latchWait(transmitLatch);
+  }
+}
+
 
 void latchWait(CountDownLatch latch) {
   try {
-    latch.await();  // wait untill all threads sent their data
+    latch.await();  // wait untill the latch is at 0
   } 
   catch (InterruptedException e) {
     e.printStackTrace();
-  }
-}
-
-void sendController() {
-
-  CountDownLatch transmit = new CountDownLatch(numPorts);
-  CountDownLatch display = new CountDownLatch(numPorts);
-
-  while (true) {
-
-    latchWait(receiveLatch);
-    receiveLatch = new CountDownLatch(1);
-
-    for (int i=0; i < numPorts; i++) {
-      SenderThread currSender = senderThreads.get(i);
-      currSender.writeBuffer(mapedData.get(i));
-    }
-    if (sendLatch.getCount()==1) {
-      sendLatch.countDown();
-    }
-
-    transmit = new CountDownLatch(numPorts);
-    for (int i=0; i < numPorts; i++) {
-      SenderThread currSender = senderThreads.get(i);
-      currSender.sendData(transmit);
-    }
-    latchWait(transmit);
-
-    display = new CountDownLatch(numPorts);
-    for (int i=0; i < numPorts; i++) {
-      SenderThread currSender = senderThreads.get(i);
-      currSender.sendSync(display);
-    }
-
-    latchWait(display);
   }
 }
 
