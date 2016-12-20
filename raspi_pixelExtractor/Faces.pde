@@ -8,7 +8,7 @@ int minUpTime = 2000;
 int minCharge = 0;
 int maxCharge = 200;
 int maxBrightness = 200;
-int lastEmpty[] = {0, 0, 0};
+int nextMaxEmptyTime[] = {0, 0, 0};
 int emptyWaitTime = 20000; //Max time to wait for the hand to empty itself
 float faceCharge[] = {minCharge, minCharge, minCharge};
 float startCharge[] = new float[3];
@@ -20,7 +20,7 @@ int emptyTime = 2000;
 void drawFaces() {  
   colorMode(HSB);
   for (int i = 0; i < 3; i++) {
-    if (millis()-lastEmpty[i] > emptyWaitTime) faceMove(i, false);
+    if (millis() > nextMaxEmptyTime[i]) faceMove(i, false);
     if (faceDown[i] && millis()-startAnimation[i] > minMoveTime) {
       if (!soundTriggered[i]) {
         voiceSample[floor(random(voiceN))].trigger();
@@ -72,7 +72,7 @@ void faceMove(int faceID, boolean down) {
       emptyFace[faceID] = true;
       faceDown[faceID] = false;
       startCharge[faceID] = faceCharge[faceID];
-      lastEmpty[faceID] = millis();
+      nextMaxEmptyTime[faceID] = millis()+(int)random(0.9*emptyWaitTime, 1.1*emptyWaitTime);
       soundTriggered[faceID] = false;
     }
   }
