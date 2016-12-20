@@ -1,6 +1,6 @@
 import processing.serial.*;
 
-float gamma = 1.7;
+float gamma = 2.2;
 int[] gammatable = new int[256];
 
 ArrayList<SenderThread> senderThreads = new ArrayList<SenderThread>();
