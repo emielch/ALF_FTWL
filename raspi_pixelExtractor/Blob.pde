@@ -2,7 +2,7 @@ PImage blobSprite;
 ArrayList<Blob> blobs;
 ArrayList<Blob> removeBlobs;
 ArrayList<Blob> addBlobs;
-float chargeAmount = 0.9;
+float chargeAmount = 1.5;
 
 void setupBlobs(){
   blobSprite = loadImage("BlobSprite.png");
@@ -120,7 +120,7 @@ class Blob{
       if(random(1) < dropChance){
         int dx = (int)(x+bx+random(-size/4,size/4));
         int dy = (int)(y+by+random(-size/4,size/4));
-        if(dx > 0 && dx < width && dy > 0 && dy < width) drops.add(new Drop(dx, dy, random(1,20), color(hue, 255, 200)));
+        if((dx > 0 && dx < 532 && dy > 0 && dy < 750) || (dx > 712 && dx < 1245 && dy > 0 && dy < 600)) drops.add(new Drop(dx, dy, random(1,20), color(hue, 255, 200)));
       }
     }
     if(pulseChance > 0){
