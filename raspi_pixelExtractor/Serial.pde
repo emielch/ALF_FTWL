@@ -14,13 +14,21 @@ void serialUpdate() {
     serialStarted = true;
   }
 
+  int whileCount;
+
 
   if (millis()>lastHB+HBDelay) {
     serialHeartbeatLatch.countDown();
     lastHB = millis();
   }
   for (int i=0; i<numTouchPorts; i++) {
-    while (touchSerial[i].available() > 0) {
+    whileCount = 0;
+    while (touchSerial[i].available() > 0) {       
+      if (whileCount>70) {         
+        println("timeout on touch serial available while loop");         
+        break;
+      }
+      whileCount++;
       char inChar = touchSerial[i].readChar();
       lastTouchHB[i] = millis();
       if (inChar=='\n') {
@@ -31,7 +39,13 @@ void serialUpdate() {
   }
 
   if (faceSerial!=null) {
-    while (faceSerial.available() > 0) {
+    whileCount = 0;
+    while (faceSerial.available() > 0) {       
+      if (whileCount>10) {         
+        println("timeout on face serial available while loop");         
+        break;
+      }
+      whileCount++;
       char inChar = faceSerial.readChar();
       lastLedHB[faceID] = millis();
       if (inChar!='.') parseHall(inChar);
@@ -41,7 +55,13 @@ void serialUpdate() {
   //receive heartbeats
   for (int i=0; i < numPorts; i++) {
     if (i==faceID) continue; // faceSerial is already checked before
+    whileCount = 0;
     while (ledSerial[i].available() > 0) {
+      if (whileCount>4) {
+        println("timeout on LED serial available while loop");
+        break;
+      }
+      whileCount++;
       char inChar = ledSerial[i].readChar();
       lastLedHB[i] = millis();
     }
