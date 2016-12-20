@@ -52,7 +52,7 @@ void createMeshMask(){
   mask.beginDraw();
   mask.background(255);
   mask.stroke(0);
-  mask.strokeWeight(2);
+  mask.strokeWeight(3.5);
   for(Segment s : segments){
     if(!s.disabled) mask.line(s.startX, s.startY, s.endX, s.endY);
   }
