@@ -53,7 +53,7 @@ void draw() {
 
 
   blendMode(NORMAL);
-  //maskMesh();
+  if(maskThaMesh) maskMesh();
   drawFaces();
   blendMode(ADD);
   sendFrame();
@@ -63,6 +63,7 @@ void keyPressed() {
   if (key == 'd') faceMove(0, true);
   else if (key == 'u') faceMove(0, false);
   else if (key == 'f') println("FrameRate: ", frameRate);
+  else if (key == 'm') maskThaMesh = !maskThaMesh;
 }
 
 
