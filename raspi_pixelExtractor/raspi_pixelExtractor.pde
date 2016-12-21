@@ -17,7 +17,7 @@ void setup() {
 
   colorMode(HSB);
   for (int i = 0; i < 50; i++) {
-    blobs.add(new Blob(width/2, height/2, (int)random(500, 1000), (int)random(105, 170), (int)random(200, 255), (int)random(40, 60), random(70, 200), width/2, 0.02));
+    blobs.add(new Blob(width/2, height/2, (int)random(500, 1000), (int)random(105, 170), (int)random(200, 255), (int)random(40, 60), random(100, 350), width/2, 0.02));
   }
 
   thread("serialHeartbeat");
