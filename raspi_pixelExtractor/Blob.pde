@@ -67,8 +67,8 @@ class Blob{
   }
   
   Blob(float x, float y, int size, int hue, int sat, int bri, float speed, float randomMovement, float dropChance){
-    rx = random(2*PI);
-    ry = random(2*PI);
+    rx = random(1);
+    ry = random(1);
     tx = -1;
     ty = -1;
     this.x = x;
@@ -113,8 +113,8 @@ class Blob{
       }
     }
     if(randomMovement > 0){
-      bx = randomMovement*cos(rx+2*PI*millis()/1000*(speed/(randomMovement*10)));
-      by = randomMovement*sin(ry+2*PI*millis()/1000*(speed/(randomMovement*10)));
+      bx = randomMovement*cos(rx*2*PI+2*PI*millis()/1000*((rx*speed/2)/(randomMovement*10)));
+      by = randomMovement*sin(ry*2*PI+2*PI*millis()/1000*((ry*speed/2)/(randomMovement*10)));
     }
     if(dropChance > 0){
       if(random(1) < dropChance){

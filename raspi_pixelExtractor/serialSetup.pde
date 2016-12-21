@@ -22,7 +22,7 @@ int faceID = -1;
 void serialSetup() {
   String[] list = Serial.list();
   delay(20);
-  println("Serial Ports List:");
+  log("Serial Ports List:");
   println((Object)list);
   for (int i=0; i<list.length; i++) {
     if (list[i].equals("/dev/ttyAMA0")) continue;

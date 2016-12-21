@@ -69,32 +69,34 @@ void serialUpdate() {
 
   for (int i=0; i < numPorts; i++) {
     if (millis() > lastLedHB[i]+1000 && frameCount>60) {
-      println(millis(), "\tTEENSY ", teensyID[i], " LOST");
+      log("TEENSY ", str(teensyID[i]), " LOST");
       try {
         ledSerial[i].stop();
         ledSerial[i] = new Serial(this, ledSerialPortName[i]);
         senderThreads.get(i).newPort(ledSerial[i]);
         if (i==faceID) faceSerial = ledSerial[i];
         lastLedHB[i] = millis()+1000;
-        println(millis(), "\treconnected!");
+        log("reconnected!");
       }
       catch(Throwable e) {
-        println(millis(), "\terror reopening port");
+        log("error reopening port:");
+        e.printStackTrace(logger);
       }
     }
   }
 
   for (int i=0; i<numTouchPorts; i++) {
     if (millis() > lastTouchHB[i]+1000 && frameCount>60) {
-      println(millis(), "\tTOUCH TEENSY ", teensyTouchID[i], " LOST");
+      log("TOUCH TEENSY ", str(teensyTouchID[i]), " LOST");
       try {
         touchSerial[i].stop();
         touchSerial[i] = new Serial(this, touchSerialPortName[i]);
         lastTouchHB[i] = millis()+1000;
-        println(millis(), "\treconnected!");
+        log("reconnected!");
       }
       catch(Throwable e) {
-        println(millis(), "\terror reopening port");
+        log("error reopening port:");
+        e.printStackTrace(logger);
       }
     }
   }

@@ -2,6 +2,8 @@ import processing.serial.*;
 
 float gamma = 2.2;
 int[] gammatable = new int[256];
+int prevSec = 0;
+int droppedFrames = 0;
 
 ArrayList<SenderThread> senderThreads = new ArrayList<SenderThread>();
 ArrayList<byte[]> mappedData = new ArrayList<byte[]>();
@@ -21,8 +23,15 @@ void senderSetup() {
 
 void sendFrame() {
   if (mappedDataFull) {
-    println(millis(), " skipped a frame");
+    droppedFrames++;
     return;
+  }
+  if(second() != prevSec){
+    prevSec = second();
+    if(droppedFrames > 0){
+      log("dropped "+str(droppedFrames)+" frames last second");
+      droppedFrames = 0;
+    }
   }
   for (int i=0; i < numPorts; i++) {
     mesh2data(mappedData.get(i), ledDataOffset, i);
