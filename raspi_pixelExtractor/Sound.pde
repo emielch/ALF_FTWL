@@ -6,10 +6,11 @@ AudioPlayer bgLoop;
 int voiceN = 8;
 int touchN = 15;
 AudioSample voiceSample[] = new AudioSample[voiceN];
-AudioSample touchSample[] = new AudioSample[touchN];
-int touchTriggered[] = new int[touchN];
+AudioPlayer touchSound[] = new AudioPlayer[touchN];
 float voiceGain = 0; //in dB, minus for attennuation, range: (-80.0 to +6.0206)
 float touchGain = 6.0206;
+float minTouchGain = -60;
+float fadeStep = 0.5;
 
 void setupSound(){
   minim = new Minim(this);
@@ -18,11 +19,19 @@ void setupSound(){
   
   //Load all samples
   for(int i = 0; i<touchN; i++){
-    touchSample[i] = minim.loadSample("interact/"+String.format("%02d",i)+".wav");
-    touchSample[i].setGain(touchGain);
+    touchSound[i] = minim.loadFile("interact/"+String.format("%02d",i+1)+".wav");
+    touchSound[i].setGain(minTouchGain);
+    touchSound[i].loop();
   }
   for(int i = 0; i<voiceN; i++){
     voiceSample[i] = minim.loadSample("voices/voice"+String.format("%02d",i)+".wav");
     voiceSample[i].setGain(voiceGain);
+  }
+}
+
+void fadeOutTouchSounds(){
+  for(int i = 0; i < touchN; i++){
+    float g = touchSound[i].getGain();
+    if(g > minTouchGain) touchSound[i].setGain(g-fadeStep);
   }
 }

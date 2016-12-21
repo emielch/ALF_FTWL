@@ -37,6 +37,7 @@ void draw() {
     sendLove(mouseX, mouseY);
   }
 
+  fadeOutTouchSounds();
   for (float pos : touchPos) {
     sendLove((int)pos, 400);
   }
