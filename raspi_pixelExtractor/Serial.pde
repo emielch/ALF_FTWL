@@ -79,8 +79,11 @@ void serialUpdate() {
         log("reconnected!");
       }
       catch(Throwable e) {
-        log("error reopening port:");
+        log("error reopening port, rebooting...");
         e.printStackTrace(logger);
+        logger.flush();
+        logger.close();
+        exec(sketchPath()+"\\reboot.bat");
       }
     }
   }
@@ -95,8 +98,11 @@ void serialUpdate() {
         log("reconnected!");
       }
       catch(Throwable e) {
-        log("error reopening port:");
+        log("error reopening port, rebooting...");
         e.printStackTrace(logger);
+        logger.flush();
+        logger.close();
+        exec(sketchPath()+"\\reboot.bat");
       }
     }
   }
