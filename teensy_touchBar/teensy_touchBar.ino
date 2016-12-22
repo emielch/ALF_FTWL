@@ -45,13 +45,13 @@ void loop() {
   readTouchPins();
   calcTouchPos();
 
-  if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) printTouchVals();
+  if (sinceSerialReceive < stopSendDelay && millis() > stopSendDelay) printTouchVals();
 
   updateLeds();
 }
 
 void checkSerial() {
-  if (sinceSerialReceive < stopSendDelay && millis()>stopSendDelay) digitalWrite(13, HIGH);
+  if (sinceSerialReceive < stopSendDelay && millis() > stopSendDelay) digitalWrite(13, HIGH);
   else digitalWrite(13, LOW);
 
   if (Serial.available() > 0) {
@@ -113,6 +113,11 @@ void calcTouchPos() {
       touchPos[i] = -1;
     }
   }
+#if TOUCHBAR_ID==100
+  if (touchPos[5] != -1 && touchPos[7] != -1) {
+    touchPos[6] = 6 / float(TOUCH_AM - 1);
+  }
+#endif
 }
 
 
