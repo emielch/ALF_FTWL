@@ -114,9 +114,9 @@ void calcTouchPos() {
     }
   }
 #if TOUCHBAR_ID==100
-  if (touchPos[5] != -1 && touchPos[7] != -1) {
-    touchPos[6] = 6 / float(TOUCH_AM - 1);
-  }
+  if (touchPos[4] != -1 && touchPos[6] != -1) {
+    touchPos[5] = 5 / float(TOUCH_AM - 1);
+  }else touchPos[5] = -1;
 #endif
 }
 
