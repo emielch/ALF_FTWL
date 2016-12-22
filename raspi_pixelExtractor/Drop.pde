@@ -97,8 +97,8 @@ class Drop{
     for(Drop d : removeSegmentDrops) currentS.drops.remove(d);
     removeSegmentDrops = new ArrayList<Drop>();
     
-    if(size < 3) speed = 0;
-    else if(size > 5) speed = 2*size*abs(currentS.sa)+minSpeed;
+    if(size < 5) speed = 0;
+    else if(speed == 0 && size > 8 || speed > 0) speed = 2*size*abs(currentS.sa)+minSpeed;
     if(speed > maxSpeed) speed = maxSpeed;
     
     if(speed > 0){
