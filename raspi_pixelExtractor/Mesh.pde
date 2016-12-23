@@ -1,6 +1,6 @@
 ArrayList<Segment> segments = new ArrayList<Segment>();
 
-int disabledSegments[] = {78,80,54,55,53,77, 52};
+int disabledSegments[] = {78,80,54,55,53,77, 52, 72, 103, 104, 101, 102, 99, 100, 98, 116, 119, 125, 129, 127, 92, 93, 90, 91, 88, 86, 89, 297, 295, 300, 277};
 
 static final int TEENSY_NUMBER = 8;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
