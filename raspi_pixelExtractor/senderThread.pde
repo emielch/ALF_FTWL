@@ -43,7 +43,7 @@ class SenderThread extends Thread {
 
 
   public void run() {
-    println("SenderThread ", name, " is running");
+    log("SenderThread ", name, " is running");
     
     while (running) {
       if (toDo) {
@@ -57,7 +57,7 @@ class SenderThread extends Thread {
           }
         }
         catch(Exception e) {
-          println("error on writing to serial. exiting the program?");
+          log("error on writing to serial. exiting the program?");
         }
       }
       
@@ -74,7 +74,7 @@ class SenderThread extends Thread {
 
   private void iamDone(char taskIn) {
     if (taskIn!=task) {
-      println("Something is seriously wrong the thread finished a task it was not supposed to do");
+      log("Something is seriously wrong the thread finished a task it was not supposed to do");
       halt();
     }
     toDo=false;
@@ -84,7 +84,7 @@ class SenderThread extends Thread {
 
   public void sendData (CountDownLatch latch) {
     if (toDo==true) {
-      println("stopping we are not yet done with the previous thing .. trying to send now");
+      log("stopping we are not yet done with the previous thing .. trying to send now");
       return;
     }
     task='s';
@@ -98,7 +98,7 @@ class SenderThread extends Thread {
 
   public void sendSync (CountDownLatch latch) {
     if (toDo==true) {
-      println("stopping we are not yet done with the previous thing .. trying to sync now");
+      log("stopping we are not yet done with the previous thing .. trying to sync now");
       return;
     }
 

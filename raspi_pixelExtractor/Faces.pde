@@ -45,7 +45,8 @@ void parseHall(char h) {
     hallID = Character.getNumericValue(h);
   }
   catch(Exception e) {
-    println("error during parsing of hall data");
+    log("error during parsing of hall data");
+    e.printStackTrace(logger);
     return;
   }
   if (h<0 || h>5) return;

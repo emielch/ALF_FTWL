@@ -25,7 +25,7 @@ void serialUpdate() {
     whileCount = 0;
     while (touchSerial[i].available() > 0) {       
       if (whileCount>70) {         
-        println("timeout on touch serial available while loop");         
+        log("timeout on touch serial available while loop");         
         break;
       }
       whileCount++;
@@ -42,7 +42,7 @@ void serialUpdate() {
     whileCount = 0;
     while (faceSerial.available() > 0) {       
       if (whileCount>10) {         
-        println("timeout on face serial available while loop");         
+        log("timeout on face serial available while loop");         
         break;
       }
       whileCount++;
@@ -58,7 +58,7 @@ void serialUpdate() {
     whileCount = 0;
     while (ledSerial[i].available() > 0) {
       if (whileCount>4) {
-        println("timeout on LED serial available while loop");
+        log("timeout on LED serial available while loop");
         break;
       }
       whileCount++;

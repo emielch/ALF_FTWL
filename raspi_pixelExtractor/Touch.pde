@@ -18,7 +18,7 @@ void parseTouchString(String s, int id) {
     }
   }
   catch(Exception e) {
-    println("error parsing touch string");
+    log("error parsing touch string");
   }
 }
 
