@@ -1,6 +1,13 @@
 ArrayList<Segment> segments = new ArrayList<Segment>();
 
-int disabledSegments[] = {78,80,54,55,53,77, 52, 72, 103, 104, 101, 102, 99, 100, 98, 116, 119, 125, 129, 127, 92, 93, 90, 91, 88, 86, 89, 297, 295, 300, 277, 905, 906, 904, 863, 865, 876, 877, 881, 882, 880, 879, 885, 886, 892, 909, 912, 911, 914, 901};
+int disabledSegments[] = {78,80,54,55,53,77, 52, 92, 93, 90, 91, 88, 86, 89, //WLB bottom half just right of middle
+                          72, 103, 104, 101, 102, 99, 100, 98, 116, 119, 125, 129, 127, //WLB top half just left of middle
+                          297, 295, 300, 277, //WRB right bottom corner
+                          //905, 906, 904, 863, 865, 876, 877, 881, 882, 880, 879, 885, 886, 892, 909, 912, 911, 914, 901 //SRB complete channel left from middle
+                          220, 232, 233, 273, 276, 275, 274, 247, 236, 235, 234, 231, 230, 176, 177, //WLT left bottom corner
+                          406, 404, 402, 278, 281, 282, 284, 279, 283, 280, 340, 401, 403, //WRB right-top corner
+                          923, 916, 918, 929, 937, 936, 938, 934, 925, 910, 908, 928, 927, 926, 932, 935, 933, 930, 931 //SRB complete channel on the right side
+                        };
 
 static final int TEENSY_NUMBER = 8;
 Teensy[] teensies = new Teensy[TEENSY_NUMBER];
