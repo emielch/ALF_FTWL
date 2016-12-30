@@ -6,7 +6,7 @@ int channel = 0;
 void setup() {
   size(1266, 800, P2D);
   background(0);
-  frameRate(60);
+  frameRate(30);
   importMesh("mesh.json");
   setupPulses();
   setupDrops();
