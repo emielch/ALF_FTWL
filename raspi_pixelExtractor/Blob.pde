@@ -2,7 +2,7 @@ PImage blobSprite;
 ArrayList<Blob> blobs;
 ArrayList<Blob> removeBlobs;
 ArrayList<Blob> addBlobs;
-float chargeAmount = 1.5;
+float chargeAmount = 3;
 
 void setupBlobs(){
   blobSprite = loadImage("BlobSprite.png");
