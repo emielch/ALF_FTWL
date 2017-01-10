@@ -25,7 +25,7 @@ void setupLeds() {
 }
 
 void updateLeds() {
-  colore.update(false);
+  colore.update(false,false);
   calcLeds();
   show_ledLib();
 }
