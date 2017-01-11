@@ -7,8 +7,8 @@ int voiceN = 8;
 int touchN = 15;
 AudioSample voiceSample[] = new AudioSample[voiceN];
 AudioPlayer touchSound[] = new AudioPlayer[touchN];
-float voiceGain = 0; //in dB, minus for attennuation, range: (-80.0 to +6.0206)
-float touchGain = 3;
+float voiceGain = -80; //in dB, minus for attennuation, range: (-80.0 to +6.0206)
+float touchGain = -80;
 float minTouchGain = -60;
 float fadeStep = 0.5;
 
